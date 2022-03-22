@@ -605,6 +605,7 @@ static int utfxtra_on_this_line = 0;	/* num of UTF-8 extra bytes in line,
 #ifdef EXP_WCWIDTH_SUPPORT
 static int utfxtracells_on_this_line = 0;	/* num of UTF-8 extra cells in line */
 static int utfextracells(const char *s);
+static void permit_split_after_CJchar(HText *text, const char *s, unsigned short pos);
 #endif
 #ifdef WIDEC_CURSES
 # ifdef EXP_WCWIDTH_SUPPORT	/* TODO: support for !WIDEC_CURSES */
@@ -4165,8 +4166,10 @@ void HText_appendCharacter(HText *text, int ch)
 		    utff--;
 		utf_xlen = UTF_XLEN(line->data[utff]);
 
-		if (line->size - utff == utf_xlen + 1)	/* have last byte */
+		if (line->size - utff == utf_xlen + 1) { /* have last byte */
 		    utfxtracells_on_this_line += utfextracells(&(line->data[utff]));
+		    permit_split_after_CJchar(text, &(line->data[utff]), line->size);
+		}
 	    }
 #endif
 	    return;
@@ -14964,5 +14967,20 @@ static int utfextracells(const char *s)
 	    result = (cells - 1);
     }
     return result;
+}
+
+static void permit_split_after_CJchar(HText *text, const char *s, unsigned short pos)
+{
+    /* Can split after almost any CJ char (Korean uses space) */
+    /* TODO: UAX#14 Unicode Line Breaking Algorithm (use ICU4C?) */
+    UCode_t u = UCGetUniFromUtf8String(&s);
+    if (u >= 0x4e00 && u <= 0x9fff || /* CJK Unified Ideographs */
+	u >= 0x3000 && u <= 0x30ff || /* CJK Symbols and Punctuation, Hiragana, Katakana */
+	u >= 0xff00 && u <= 0xffef || /* Halfwidth and Fullwidth Forms. Fullwidth ?! are often used */
+	/* rare characters */
+	u >= 0x3400 && u <= 0x4dbf || /* CJK Unified Ideographs Extension A */
+	u >= 0xf900 && u <= 0xfaff || /* CJK Compatibility Ideographs */
+	u >= 0x20000 && u <= 0x3ffff) /* {Supplementary,Tertiary} Ideographic Plane */
+	text->permissible_split = pos;
 }
 #endif
