@@ -3005,7 +3005,7 @@ static void split_line(HText *text, unsigned split)
 	    ctrl_chars_on_this_line += utfxtra_on_this_line;
 
 	    /* Add the data to the new line. -FM */
-	    for (i = 0; (linedata[i] = p[i]) != '\0'; ++i) ;
+	    memmove(linedata + line->size, p, plen + 1);
 	    line->size = (unsigned short) (line->size + plen);
 	}
     }
