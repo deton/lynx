@@ -93,7 +93,9 @@ US-ASCII control characters <32 which are not defined in Unicode standard
 
     extern void HText_setLastChar(HText *text, int ch);
     extern char HText_getLastChar(HText *text);
+#ifdef EXP_JAPANESE_SPACES
     extern BOOL HText_checkLastChar_needSpaceOnJoinLines(HText *text);
+#endif
 
     extern int HText_sourceAnchors(HText *text);
     extern void HText_setStale(HText *text);

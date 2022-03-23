@@ -275,18 +275,6 @@ void LYShowBadHTML(const char *message)
  *			A C T I O N	R O U T I N E S
  */
 
-/* FIXME:  this should be amended to do the substitution only when not in a
- * multibyte stream.
- */
-#ifdef EXP_JAPANESE_SPACES
-#define FIX_JAPANESE_SPACES \
-	(HTCJK == CHINESE || HTCJK == JAPANESE || IS_UTF8_TTY)
-	/* don't replace '\n' with ' ' if Chinese or Japanese - HN
-	 */
-#else
-#define FIX_JAPANESE_SPACES 0
-#endif
-
 /*	Character handling
  *	------------------
  */
@@ -331,11 +319,11 @@ void HTML_put_character(HTStructured * me, int c)
     case HTML_TITLE:
 	if (c == LY_SOFT_HYPHEN)
 	    return;
-	if (c == '\t') {
-	    HTChunkPutc(&me->title, ' ');
-	} else if (c != '\n' && c != '\r') {
+	if (c != '\n' && c != '\t' && c != '\r') {
 	    HTChunkPutc(&me->title, uc);
 #ifdef EXP_JAPANESE_SPACES
+	} else if (c == '\t') {
+	    HTChunkPutc(&me->title, ' ');
 	/* don't replace '\n' with ' ' if Chinese or Japanese - HN
 	 */
 	} else if (me->title.size > 0 && is8bits(me->title.data[me->title.size - 1])) {
@@ -465,7 +453,11 @@ void HTML_put_character(HTStructured * me, int c)
 	    }
 	    if (c == '\n') {
 		if (me->in_word) {
+#ifdef EXP_JAPANESE_SPACES
 		    if (HText_checkLastChar_needSpaceOnJoinLines(me->text)) {
+#else
+		    if (HText_getLastChar(me->text) != ' ') {
+#endif
 			me->inP = TRUE;
 			me->inLABEL = FALSE;
 			HText_appendCharacter(me->text, ' ');
@@ -617,7 +609,11 @@ void HTML_put_string(HTStructured * me, const char *s)
 		}
 		if (c == '\n') {
 		    if (me->in_word) {
+#ifdef EXP_JAPANESE_SPACES
 			if (HText_checkLastChar_needSpaceOnJoinLines(me->text))
+#else
+			if (HText_getLastChar(me->text) != ' ')
+#endif
 			    HText_appendCharacter(me->text, ' ');
 			me->in_word = NO;
 		    }

@@ -453,7 +453,11 @@ struct _HText {
     HTList *hidden_links;	/* Content-less links ... */
     int hiddenlinkflag;		/*  ... and how to treat them */
     BOOL no_cache;		/* Always refresh? */
+#ifdef EXP_JAPANESE_SPACES
     char LastChar[7];		/* For absorbing white space */
+#else
+    char LastChar;		/* For absorbing white space */
+#endif
 
 /* For Internal use: */
     HTStyle *style;		/* Current style */
@@ -1134,8 +1138,12 @@ HText *HText_new(HTParentAnchor *anchor)
 				 anchor->post_data)
 				? YES
 				: NO);
+#ifdef EXP_JAPANESE_SPACES
     memset(self->LastChar, 0, sizeof(self->LastChar));
     self->LastChar[0] = '\0';
+#else
+    self->LastChar = '\0';
+#endif
 
 #ifndef USE_PRETTYSRC
     if (HTOutputFormat == WWW_SOURCE)
@@ -2868,8 +2876,12 @@ static void split_line(HText *text, unsigned split)
 #ifdef EXP_WCWIDTH_SUPPORT
     utfxtracells_on_this_line = 0;
 #endif
+#ifdef EXP_JAPANESE_SPACES
     memset(text->LastChar, 0, sizeof(text->LastChar));
     text->LastChar[0] = ' ';
+#else
+    text->LastChar = ' ';
+#endif
 
 #ifdef DEBUG_APPCH
     CTRACE((tfp, "GridText: split_line(%p,%d) called\n", text, split));
@@ -4660,8 +4672,10 @@ void HText_setLastChar(HText *text, int ch)
 	return;
     }
     memset(text->LastChar, 0, sizeof(text->LastChar));
-#endif
     text->LastChar[0] = (char) ch;
+#else
+    text->LastChar = (char) ch;
+#endif
 }
 
 /*	Get LastChar element in the text object.
@@ -4679,23 +4693,25 @@ char HText_getLastChar(HText *text)
             ;
 	return ((char) text->LastChar[i - i]);
     }
-#endif
     return ((char) text->LastChar[0]);
+#else
+    return ((char) text->LastChar);
+#endif
 }
 
+#ifdef EXP_JAPANESE_SPACES
 BOOL HText_checkLastChar_needSpaceOnJoinLines(HText *text)
 {
     if (!text)
 	return NO;
 
-#ifdef EXP_JAPANESE_SPACES
     if (IS_UTF_FIRST(text->LastChar[0]) && isUTF8CJChar(text->LastChar))
         return NO;
-#endif
     if (text->LastChar[0] != ' ')
 	return YES;
     return NO;
 }
+#endif
 
 
 /*		Simple table handling - private
