@@ -453,7 +453,7 @@ struct _HText {
     HTList *hidden_links;	/* Content-less links ... */
     int hiddenlinkflag;		/*  ... and how to treat them */
     BOOL no_cache;		/* Always refresh? */
-    char LastChar;		/* For absorbing white space */
+    char LastChar[7];		/* For absorbing white space */
 
 /* For Internal use: */
     HTStyle *style;		/* Current style */
@@ -1134,7 +1134,8 @@ HText *HText_new(HTParentAnchor *anchor)
 				 anchor->post_data)
 				? YES
 				: NO);
-    self->LastChar = '\0';
+    memset(self->LastChar, 0, sizeof(self->LastChar));
+    self->LastChar[0] = '\0';
 
 #ifndef USE_PRETTYSRC
     if (HTOutputFormat == WWW_SOURCE)
@@ -2867,7 +2868,8 @@ static void split_line(HText *text, unsigned split)
 #ifdef EXP_WCWIDTH_SUPPORT
     utfxtracells_on_this_line = 0;
 #endif
-    text->LastChar = ' ';
+    memset(text->LastChar, 0, sizeof(text->LastChar));
+    text->LastChar[0] = ' ';
 
 #ifdef DEBUG_APPCH
     CTRACE((tfp, "GridText: split_line(%p,%d) called\n", text, split));
@@ -4648,7 +4650,18 @@ void HText_setLastChar(HText *text, int ch)
     if (!text)
 	return;
 
-    text->LastChar = (char) ch;
+#ifdef EXP_JAPANESE_SPACES
+    if (IS_UTF_EXTRA(ch) && IS_UTF_FIRST(text->LastChar[0])) {
+        int i;
+        for (i = 1; text->LastChar[i] != '\0' && i < sizeof(text->LastChar); i++)
+            ;
+	text->LastChar[i] = (char) ch;
+	text->LastChar[i + 1] = '\0';
+	return;
+    }
+    memset(text->LastChar, 0, sizeof(text->LastChar));
+#endif
+    text->LastChar[0] = (char) ch;
 }
 
 /*	Get LastChar element in the text object.
@@ -4659,8 +4672,31 @@ char HText_getLastChar(HText *text)
     if (!text)
 	return ('\0');
 
-    return ((char) text->LastChar);
+#ifdef EXP_JAPANESE_SPACES
+    if (IS_UTF_FIRST(text->LastChar[0])) {
+        int i;
+        for (i = 1; text->LastChar[i] != '\0' && i < sizeof(text->LastChar); i++)
+            ;
+	return ((char) text->LastChar[i - i]);
+    }
+#endif
+    return ((char) text->LastChar[0]);
 }
+
+BOOL HText_checkLastChar_needSpaceOnJoinLines(HText *text)
+{
+    if (!text)
+	return NO;
+
+#ifdef EXP_JAPANESE_SPACES
+    if (IS_UTF_FIRST(text->LastChar[0]) && isUTF8CJChar(text->LastChar))
+        return NO;
+#endif
+    if (text->LastChar[0] != ' ')
+	return YES;
+    return NO;
+}
+
 
 /*		Simple table handling - private
  *		-------------------------------
@@ -5204,7 +5240,7 @@ static void add_link_number(HText *text, TextAnchor *a, int save_position)
 	&& (text->source ? !psrcview_no_anchor_numbering : 1)
 #endif
 	&& links_are_numbered()) {
-	char saved_lastchar = text->LastChar;
+	char saved_lastchar = HText_getLastChar(text);
 	int saved_linenum = text->Lines;
 	HTAnchor *link_dest;
 	char *link_text;
@@ -5222,7 +5258,7 @@ static void add_link_number(HText *text, TextAnchor *a, int save_position)
 	    HText_appendText(text, marker);
 	}
 	if (saved_linenum && text->Lines && saved_lastchar != ' ')
-	    text->LastChar = ']';	/* if marker not after space caused split */
+	    HText_setLastChar(text, ']');	/* if marker not after space caused split */
 	if (save_position) {
 	    a->line_num = text->Lines;
 	    a->line_pos = (short) text->last_line->size;
@@ -14973,6 +15009,14 @@ static void permit_split_after_CJchar(HText *text, const char *s, unsigned short
 {
     /* Can split after almost any CJ char (Korean uses space) */
     /* TODO: UAX#14 Unicode Line Breaking Algorithm (use ICU4C?) */
+    if (isUTF8CJChar(s))
+	text->permissible_split = pos;
+}
+#endif /* EXP_WCWIDTH_SUPPORT */
+
+#if defined(EXP_WCWIDTH_SUPPORT) || defined(EXP_JAPANESE_SPACES)
+BOOL isUTF8CJChar(const char *s)
+{
     UCode_t u = UCGetUniFromUtf8String(&s);
     if (u >= 0x4e00 && u <= 0x9fff || /* CJK Unified Ideographs */
 	u >= 0x3000 && u <= 0x30ff || /* CJK Symbols and Punctuation, Hiragana, Katakana */
@@ -14981,6 +15025,7 @@ static void permit_split_after_CJchar(HText *text, const char *s, unsigned short
 	u >= 0x3400 && u <= 0x4dbf || /* CJK Unified Ideographs Extension A */
 	u >= 0xf900 && u <= 0xfaff || /* CJK Compatibility Ideographs */
 	u >= 0x20000 && u <= 0x3ffff) /* {Supplementary,Tertiary} Ideographic Plane */
-	text->permissible_split = pos;
+	return YES;
+    return NO;
 }
-#endif
+#endif /* EXP_WCWIDTH_SUPPORT || EXP_JAPANESE_SPACES */

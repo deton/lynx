@@ -93,6 +93,7 @@ US-ASCII control characters <32 which are not defined in Unicode standard
 
     extern void HText_setLastChar(HText *text, int ch);
     extern char HText_getLastChar(HText *text);
+    extern BOOL HText_checkLastChar_needSpaceOnJoinLines(HText *text);
 
     extern int HText_sourceAnchors(HText *text);
     extern void HText_setStale(HText *text);
@@ -288,6 +289,10 @@ US-ASCII control characters <32 which are not defined in Unicode standard
     extern void HText_updateKcode(HText *text, HTkcode kcode);
     extern HTkcode HText_getSpecifiedKcode(HText *text);
     extern void HText_updateSpecifiedKcode(HText *text, HTkcode kcode);
+
+#if defined(EXP_WCWIDTH_SUPPORT) || defined(EXP_JAPANESE_SPACES)
+    extern BOOL isUTF8CJChar(const char *s);
+#endif
 
 #ifdef __cplusplus
 }

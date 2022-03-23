@@ -280,7 +280,7 @@ void LYShowBadHTML(const char *message)
  */
 #ifdef EXP_JAPANESE_SPACES
 #define FIX_JAPANESE_SPACES \
-	(HTCJK == CHINESE || HTCJK == JAPANESE || HTCJK == TAIPEI)
+	(HTCJK == CHINESE || HTCJK == JAPANESE || IS_UTF8_TTY)
 	/* don't replace '\n' with ' ' if Chinese or Japanese - HN
 	 */
 #else
@@ -331,14 +331,25 @@ void HTML_put_character(HTStructured * me, int c)
     case HTML_TITLE:
 	if (c == LY_SOFT_HYPHEN)
 	    return;
-	if (c != '\n' && c != '\t' && c != '\r') {
+	if (c == '\t') {
+	    HTChunkPutc(&me->title, ' ');
+	} else if (c != '\n' && c != '\r') {
 	    HTChunkPutc(&me->title, uc);
-	} else if (FIX_JAPANESE_SPACES) {
-	    if (c == '\t') {
-		HTChunkPutc(&me->title, ' ');
-	    } else {
+#ifdef EXP_JAPANESE_SPACES
+	/* don't replace '\n' with ' ' if Chinese or Japanese - HN
+	 */
+	} else if (me->title.size > 0 && is8bits(me->title.data[me->title.size - 1])) {
+	    if (HTCJK == CHINESE || HTCJK == JAPANESE) {
 		return;
+	    } else if (IS_UTF8_TTY) {
+		int i = me->title.size - 1;
+		while (i > 0 && (me->title.data[i] & 0xc0) == 0x80)
+		    i--;
+		if (isUTF8CJChar(&(me->title.data[i])))
+		    return;
 	    }
+	    HTChunkPutc(&me->title, ' ');
+#endif
 	} else {
 	    HTChunkPutc(&me->title, ' ');
 	}
@@ -453,15 +464,13 @@ void HTML_put_character(HTStructured * me, int c)
 		UPDATE_STYLE;
 	    }
 	    if (c == '\n') {
-		if (!FIX_JAPANESE_SPACES) {
-		    if (me->in_word) {
-			if (HText_getLastChar(me->text) != ' ') {
-			    me->inP = TRUE;
-			    me->inLABEL = FALSE;
-			    HText_appendCharacter(me->text, ' ');
-			}
-			me->in_word = NO;
+		if (me->in_word) {
+		    if (HText_checkLastChar_needSpaceOnJoinLines(me->text)) {
+			me->inP = TRUE;
+			me->inLABEL = FALSE;
+			HText_appendCharacter(me->text, ' ');
 		    }
+		    me->in_word = NO;
 		}
 
 	    } else if (c == ' ' || c == '\t') {
@@ -607,12 +616,10 @@ void HTML_put_string(HTStructured * me, const char *s)
 		    UPDATE_STYLE;
 		}
 		if (c == '\n') {
-		    if (!FIX_JAPANESE_SPACES) {
-			if (me->in_word) {
-			    if (HText_getLastChar(me->text) != ' ')
-				HText_appendCharacter(me->text, ' ');
-			    me->in_word = NO;
-			}
+		    if (me->in_word) {
+			if (HText_checkLastChar_needSpaceOnJoinLines(me->text))
+			    HText_appendCharacter(me->text, ' ');
+			me->in_word = NO;
 		    }
 
 		} else if (c == ' ' || c == '\t') {
