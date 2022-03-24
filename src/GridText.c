@@ -4663,10 +4663,11 @@ void HText_setLastChar(HText *text, int ch)
 	return;
 
 #ifdef EXP_JAPANESE_SPACES
+    CTRACE((tfp, "setLastChar %02x %c\n", ch, ch));
     if (IS_UTF_EXTRA(ch) && IS_UTF_FIRST(text->LastChar[0])) {
-        int i;
-        for (i = 1; text->LastChar[i] != '\0' && i < sizeof(text->LastChar); i++)
-            ;
+	int i;
+	for (i = 1; text->LastChar[i] != '\0' && i < sizeof(text->LastChar); i++)
+	    ;
 	text->LastChar[i] = (char) ch;
 	text->LastChar[i + 1] = '\0';
 	return;
@@ -4688,11 +4689,13 @@ char HText_getLastChar(HText *text)
 
 #ifdef EXP_JAPANESE_SPACES
     if (IS_UTF_FIRST(text->LastChar[0])) {
-        int i;
-        for (i = 1; text->LastChar[i] != '\0' && i < sizeof(text->LastChar); i++)
-            ;
-	return ((char) text->LastChar[i - i]);
+	int i;
+	for (i = 1; text->LastChar[i] != '\0' && i < sizeof(text->LastChar); i++)
+	    ;
+	CTRACE((tfp, "getLastChar %02x\n", text->LastChar[i - 1]));
+	return ((char) text->LastChar[i - 1]);
     }
+    CTRACE((tfp, "getLastChar %02x\n", text->LastChar[0]));
     return ((char) text->LastChar[0]);
 #else
     return ((char) text->LastChar);
@@ -4705,8 +4708,13 @@ BOOL HText_checkLastChar_needSpaceOnJoinLines(HText *text)
     if (!text)
 	return NO;
 
+    CTRACE((tfp, "checkLastChar %02x\n", text->LastChar[0]));
     if (IS_UTF_FIRST(text->LastChar[0]) && isUTF8CJChar(text->LastChar))
-        return NO;
+	return NO;
+    if ((HTCJK == CHINESE || HTCJK == JAPANESE) && is8bits(text->LastChar[0])) {
+	/* TODO: support 2nd byte of some SJIS kanji (!is8bits && IS_SJIS_LO) */
+	return NO;
+    }
     if (text->LastChar[0] != ' ')
 	return YES;
     return NO;

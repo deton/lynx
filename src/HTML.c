@@ -328,6 +328,7 @@ void HTML_put_character(HTStructured * me, int c)
 	 */
 	} else if (me->title.size > 0 && is8bits(me->title.data[me->title.size - 1])) {
 	    if (HTCJK == CHINESE || HTCJK == JAPANESE) {
+		/* TODO: support 2nd byte of SJIS (!is8bits && IS_SJIS_LO) */
 		return;
 	    } else if (IS_UTF8_TTY) {
 		int i = me->title.size - 1;
