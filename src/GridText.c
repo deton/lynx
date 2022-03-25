@@ -1140,7 +1140,6 @@ HText *HText_new(HTParentAnchor *anchor)
 				: NO);
 #ifdef EXP_JAPANESE_SPACES
     memset(self->LastChar, 0, sizeof(self->LastChar));
-    self->LastChar[0] = '\0';
 #else
     self->LastChar = '\0';
 #endif
@@ -2876,12 +2875,7 @@ static void split_line(HText *text, unsigned split)
 #ifdef EXP_WCWIDTH_SUPPORT
     utfxtracells_on_this_line = 0;
 #endif
-#ifdef EXP_JAPANESE_SPACES
-    memset(text->LastChar, 0, sizeof(text->LastChar));
-    text->LastChar[0] = ' ';
-#else
-    text->LastChar = ' ';
-#endif
+    HText_setLastChar(text, ' ');
 
 #ifdef DEBUG_APPCH
     CTRACE((tfp, "GridText: split_line(%p,%d) called\n", text, split));
@@ -4663,10 +4657,9 @@ void HText_setLastChar(HText *text, int ch)
 	return;
 
 #ifdef EXP_JAPANESE_SPACES
-    CTRACE((tfp, "setLastChar %02x %c\n", ch, ch));
     if (IS_UTF_EXTRA(ch) && IS_UTF_FIRST(text->LastChar[0])) {
 	int i;
-	for (i = 1; text->LastChar[i] != '\0' && i < sizeof(text->LastChar); i++)
+	for (i = 1; text->LastChar[i] != '\0' && i < sizeof(text->LastChar) - 1; i++)
 	    ;
 	text->LastChar[i] = (char) ch;
 	text->LastChar[i + 1] = '\0';
@@ -4692,10 +4685,8 @@ char HText_getLastChar(HText *text)
 	int i;
 	for (i = 1; text->LastChar[i] != '\0' && i < sizeof(text->LastChar); i++)
 	    ;
-	CTRACE((tfp, "getLastChar %02x\n", text->LastChar[i - 1]));
 	return ((char) text->LastChar[i - 1]);
     }
-    CTRACE((tfp, "getLastChar %02x\n", text->LastChar[0]));
     return ((char) text->LastChar[0]);
 #else
     return ((char) text->LastChar);
