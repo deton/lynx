@@ -454,7 +454,7 @@ struct _HText {
     int hiddenlinkflag;		/*  ... and how to treat them */
     BOOL no_cache;		/* Always refresh? */
 #ifdef EXP_JAPANESE_SPACES
-    char LastChar[7];		/* For absorbing white space */
+    char LastChars[7];		/* For absorbing white space */
 #else
     char LastChar;		/* For absorbing white space */
 #endif
@@ -1139,7 +1139,7 @@ HText *HText_new(HTParentAnchor *anchor)
 				? YES
 				: NO);
 #ifdef EXP_JAPANESE_SPACES
-    memset(self->LastChar, 0, sizeof(self->LastChar));
+    memset(self->LastChars, 0, sizeof(self->LastChars));
 #else
     self->LastChar = '\0';
 #endif
@@ -4657,16 +4657,16 @@ void HText_setLastChar(HText *text, int ch)
 	return;
 
 #ifdef EXP_JAPANESE_SPACES
-    if (IS_UTF_EXTRA(ch) && IS_UTF_FIRST(text->LastChar[0])) {
+    if (IS_UTF_EXTRA(ch) && IS_UTF_FIRST(text->LastChars[0])) {
 	int i;
-	for (i = 1; text->LastChar[i] != '\0' && i < sizeof(text->LastChar) - 1; i++)
+	for (i = 1; text->LastChars[i] != '\0' && i < sizeof(text->LastChars) - 1; i++)
 	    ;
-	text->LastChar[i] = (char) ch;
-	text->LastChar[i + 1] = '\0';
+	text->LastChars[i] = (char) ch;
+	text->LastChars[i + 1] = '\0';
 	return;
     }
-    memset(text->LastChar, 0, sizeof(text->LastChar));
-    text->LastChar[0] = (char) ch;
+    memset(text->LastChars, 0, sizeof(text->LastChars));
+    text->LastChars[0] = (char) ch;
 #else
     text->LastChar = (char) ch;
 #endif
@@ -4681,13 +4681,13 @@ char HText_getLastChar(HText *text)
 	return ('\0');
 
 #ifdef EXP_JAPANESE_SPACES
-    if (IS_UTF_FIRST(text->LastChar[0])) {
+    if (IS_UTF_FIRST(text->LastChars[0])) {
 	int i;
-	for (i = 1; text->LastChar[i] != '\0' && i < sizeof(text->LastChar); i++)
+	for (i = 1; text->LastChars[i] != '\0' && i < sizeof(text->LastChars); i++)
 	    ;
-	return ((char) text->LastChar[i - 1]);
+	return ((char) text->LastChars[i - 1]);
     }
-    return ((char) text->LastChar[0]);
+    return ((char) text->LastChars[0]);
 #else
     return ((char) text->LastChar);
 #endif
@@ -4699,14 +4699,13 @@ BOOL HText_checkLastChar_needSpaceOnJoinLines(HText *text)
     if (!text)
 	return NO;
 
-    CTRACE((tfp, "checkLastChar %02x\n", text->LastChar[0]));
-    if (IS_UTF_FIRST(text->LastChar[0]) && isUTF8CJChar(text->LastChar))
+    if (IS_UTF_FIRST(text->LastChars[0]) && isUTF8CJChar(text->LastChars))
 	return NO;
-    if ((HTCJK == CHINESE || HTCJK == JAPANESE) && is8bits(text->LastChar[0])) {
+    if ((HTCJK == CHINESE || HTCJK == JAPANESE) && is8bits(text->LastChars[0])) {
 	/* TODO: support 2nd byte of some SJIS kanji (!is8bits && IS_SJIS_LO) */
 	return NO;
     }
-    if (text->LastChar[0] != ' ')
+    if (text->LastChars[0] != ' ')
 	return YES;
     return NO;
 }
