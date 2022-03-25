@@ -4697,7 +4697,7 @@ char HText_getLastChar(HText *text)
 BOOL HText_checkLastChar_needSpaceOnJoinLines(HText *text)
 {
     if (!text)
-	return NO;
+	return YES;
 
     if (IS_UTF_FIRST(text->LastChars[0]) && isUTF8CJChar(text->LastChars))
 	return NO;
