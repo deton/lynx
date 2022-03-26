@@ -4135,7 +4135,7 @@ static int gen_options(char **newfile)
     EndSelect(fp0);
 
     /* ppre_classnames: INPUT */
-    PutLabel(fp0, gettext("class names for pre-format <P>"), ppre_classnames_string);
+    PutLabel(fp0, gettext("Pre-format <P> class names"), ppre_classnames_string);
     PutTextInput(fp0, ppre_classnames_string, NonNull(ppre_classnames), text_len, "");
 
     /*

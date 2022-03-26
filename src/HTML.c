@@ -432,6 +432,7 @@ void HTML_put_character(HTStructured * me, int c)
 	 * Free format text.
 	 */
 	if (me->sp->style->id == ST_Preformatted ||
+	    me->sp->style->id == ST_PreformattedDiv ||
 	    me->sp->style->id == ST_PreformattedP) {
 	    if (c != '\r' &&
 		!(c == '\n' && me->inLABEL && !me->inP) &&
@@ -1754,6 +1755,13 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    change_paragraph_style(me, styles[HTML_DLEFT]);
 	    UPDATE_STYLE;
 	    me->current_default_alignment = styles[HTML_DLEFT]->alignment;
+	}
+	if (present && present[HTML_DIV_CLASS] &&
+		   non_empty(value[HTML_DIV_CLASS])) {
+	    if (matches_class(value[HTML_DIV_CLASS], ppre_classnames)) {
+		change_paragraph_style(me, styles[HTML_DIVPRE]);
+		UPDATE_STYLE;
+	    }
 	}
 	CHECK_ID(HTML_DIV_ID);
 	break;
@@ -5303,6 +5311,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		   ((me->Division_Level < 0) &&
 		    (me->sp->style->id == ST_Normal ||
 		     me->sp->style->id == ST_Preformatted ||
+		     me->sp->style->id == ST_PreformattedDiv ||
 		     me->sp->style->id == ST_PreformattedP))) {
 	    me->sp->style->alignment = HT_LEFT;
 	} else {
@@ -7424,6 +7433,7 @@ static void get_styles(void)
     styles[HTML_DCENTER] = st[ST_DivCenter];
     styles[HTML_DLEFT] = st[ST_DivLeft];
     styles[HTML_DRIGHT] = st[ST_DivRight];
+    styles[HTML_DIVPRE] = st[ST_PreformattedDiv];
 
     styles[HTML_DL] = st[ST_Glossary];
     /* nested list styles */
@@ -8207,10 +8217,10 @@ static BOOL matches_class(const char *attr, const char *search)
     StrAllocCopy(tmpbuf, search);
     next = tmpbuf;
     while ((st = LYstrsep(&next, " ")) != 0) {
-        if (strstr(attr, st)) { /* TODO: check for each splitted attr */
-            result = TRUE;
-            break;
-        }
+	if (strstr(attr, st)) { /* TODO: check for each splitted attr */
+	    result = TRUE;
+	    break;
+	}
     }
     FREE(tmpbuf);
     return result;
