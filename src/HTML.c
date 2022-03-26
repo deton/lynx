@@ -333,7 +333,7 @@ void HTML_put_character(HTStructured * me, int c)
 	    } else if (IS_UTF8_TTY) {
 		/* find start position of UTF-8 sequence */
 		int i = me->title.size - 1;
-		while (i > 0 && (me->title.data[i] & 0xc0) == 0x80)
+		while (i > 0 && (me->title.data[i] & 0xc0) == 0x80) /* UTF_EXTRA */
 		    i--;
 		if (isUTF8CJChar(&(me->title.data[i])))
 		    return;
