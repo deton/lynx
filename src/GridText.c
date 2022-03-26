@@ -454,7 +454,7 @@ struct _HText {
     int hiddenlinkflag;		/*  ... and how to treat them */
     BOOL no_cache;		/* Always refresh? */
 #ifdef EXP_JAPANESE_SPACES
-    char LastChars[7];		/* For absorbing white space */
+    char LastChars[7];		/* utf-8 buffer */
 #else
     char LastChar;		/* For absorbing white space */
 #endif
