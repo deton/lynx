@@ -346,9 +346,18 @@ HTStyleInit(
 	       NO, NO, 0, 0, 0
 );
 
+static HTStyle HTStylePreformattedP =
+HTStyleInit(		/* <p style="white-space: pre;"> */
+	       &HTStylePreformatted,
+	       PreformattedP, "PPRE",
+	       HT_FONT, 1, HT_BLACK, 0, 0,
+	       3, 3, 6, HT_LEFT, 1, 0, tabs_8,
+	       NO, NO, 0, 0, 0
+);
+
 static HTStyle HTStyleListing =
 HTStyleInit(
-	       &HTStylePreformatted, Listing, "LISTING",
+	       &HTStylePreformattedP, Listing, "LISTING",
 	       HT_FONT, 1, HT_BLACK, 0, 0,
 	       0, 0, 0, HT_LEFT, 1, 0, tabs_8,
 	       NO, NO, 0, 0, 0);

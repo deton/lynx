@@ -221,6 +221,7 @@ extern "C" {
 	ST_GlossaryCompact6,
 	ST_Example,
 	ST_Preformatted,
+	ST_PreformattedP,
 	ST_Listing,
 	ST_Address,
 	ST_Note,

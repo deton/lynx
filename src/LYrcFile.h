@@ -191,6 +191,7 @@
 #define RC_PERSONAL_MAIL_ADDRESS        "personal_mail_address"
 #define RC_PERSONAL_MAIL_NAME           "personal_mail_name"
 #define RC_POSITIONABLE_EDITOR          "positionable_editor"
+#define RC_PPRECLASSNAMES               "ppre_classnames"
 #define RC_PREFERRED_CHARSET            "preferred_charset"
 #define RC_PREFERRED_CONTENT_TYPE       "preferred_content_type"
 #define RC_PREFERRED_ENCODING           "preferred_encoding"

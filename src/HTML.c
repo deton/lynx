@@ -147,6 +147,8 @@ static char *MakeNewTitle(STRING2PTR value, int src_type);
 static char *MakeNewImageValue(STRING2PTR value);
 static char *MakeNewMapValue(STRING2PTR value, const char *mapstr);
 
+static BOOL matches_class(const char *attr, const char *search);
+
 /*	Set an internal flag that the next call to a stack-affecting method
  *	is only internal and the stack manipulation should be skipped. - kw
  */
@@ -429,7 +431,8 @@ void HTML_put_character(HTStructured * me, int c)
 	/*
 	 * Free format text.
 	 */
-	if (me->sp->style->id == ST_Preformatted) {
+	if (me->sp->style->id == ST_Preformatted ||
+	    me->sp->style->id == ST_PreformattedP) {
 	    if (c != '\r' &&
 		!(c == '\n' && me->inLABEL && !me->inP) &&
 		!(c == '\n' && !me->inPRE)) {
@@ -1846,6 +1849,12 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	break;
 
     case HTML_P:
+	if (present && present[HTML_P_CLASS] &&
+		   non_empty(value[HTML_P_CLASS])) {
+	    if (matches_class(value[HTML_P_CLASS], ppre_classnames)) {
+		change_paragraph_style(me, styles[HTML_PPRE]);
+	    }
+	}
 	LYHandlePlike(me, present, value, include, HTML_P_ALIGN, TRUE);
 	CHECK_ID(HTML_P_ID);
 	break;
@@ -5293,7 +5302,8 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	} else if (me->List_Nesting_Level >= 0 ||
 		   ((me->Division_Level < 0) &&
 		    (me->sp->style->id == ST_Normal ||
-		     me->sp->style->id == ST_Preformatted))) {
+		     me->sp->style->id == ST_Preformatted ||
+		     me->sp->style->id == ST_PreformattedP))) {
 	    me->sp->style->alignment = HT_LEFT;
 	} else {
 	    me->sp->style->alignment = (short) me->current_default_alignment;
@@ -7462,6 +7472,7 @@ static void get_styles(void)
     styles[HTML_PLAINTEXT] =
 	styles[HTML_XMP] = st[ST_Example];
     styles[HTML_PRE] = st[ST_Preformatted];
+    styles[HTML_PPRE] = st[ST_PreformattedP];
     styles[HTML_LISTING] = st[ST_Listing];
 }
 
@@ -8184,4 +8195,23 @@ static char *MakeNewMapValue(STRING2PTR value, const char *mapstr)
     }
     StrAllocCat(newtitle, "]");
     return newtitle;
+}
+
+static BOOL matches_class(const char *attr, const char *search)
+{
+    char *tmpbuf = 0;
+    char *next;
+    char *st;
+    BOOL result = FALSE;
+
+    StrAllocCopy(tmpbuf, search);
+    next = tmpbuf;
+    while ((st = LYstrsep(&next, " ")) != 0) {
+        if (strstr(attr, st)) { /* TODO: check for each splitted attr */
+            result = TRUE;
+            break;
+        }
+    }
+    FREE(tmpbuf);
+    return result;
 }
