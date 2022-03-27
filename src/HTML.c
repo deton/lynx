@@ -112,7 +112,7 @@ static HTStyleSheet *styleSheet = NULL;		/* Application-wide */
 
 /*	Module-wide style cache
 */
-static HTStyle *styles[HTML_ELEMENTS + LYNX_HTML_EXTRA_ELEMENTS];
+static HTStyle *styles[HTML_ELEMENTS + LYNX_HTML_EXTRA_ELEMENTS + 1];
 
 					   /* adding 24 nested list styles  */
 					   /* and 3 header alignment styles */
