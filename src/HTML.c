@@ -1182,6 +1182,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	break;
 
     case HTML_LINK:
+#ifdef USE_TOOLBAR
 	intern_flag = FALSE;
 	if (present && present[HTML_LINK_HREF]) {
 	    CHECK_FOR_INTERN(intern_flag, value[HTML_LINK_HREF]);
@@ -1476,6 +1477,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	}
 	FREE(href);
 	FREE(title);
+#endif /* USE_TOOLBAR */
 	break;
 
     case HTML_ISINDEX:
@@ -1679,6 +1681,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	UPDATE_STYLE;
 	if (me->sp->tag_number == (int) ElementNumber)
 	    LYEnsureDoubleSpace(me);
+#ifdef USE_TOOLBAR
 	/*
 	 * Treat this as a toolbar if we don't have one yet, and we are in the
 	 * first half of the first page.  - FM
@@ -1693,6 +1696,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    HText_endAnchor(me->text, 0);
 	    HText_setToolbar(me->text);
 	}
+#endif
 	CHECK_ID(HTML_GEN_ID);
 	break;
 
