@@ -352,7 +352,7 @@ HTStyleInit(		/* <div style="white-space: pre;"> */
 	       PreformattedDiv, "DIVPRE",
 	       HT_FONT, 1, HT_BLACK, 0, 0,
 	       3, 3, 6, HT_LEFT, 1, 0, tabs_8,
-	       NO, NO, 0, 0, 0
+	       YES, NO, 0, 0, 0
 );
 
 static HTStyle HTStylePreformattedP =
@@ -361,7 +361,7 @@ HTStyleInit(		/* <p style="white-space: pre;"> */
 	       PreformattedP, "PPRE",
 	       HT_FONT, 1, HT_BLACK, 0, 0,
 	       3, 3, 6, HT_LEFT, 1, 0, tabs_8,
-	       NO, NO, 0, 0, 0
+	       YES, NO, 0, 0, 0
 );
 
 static HTStyle HTStyleListing =
