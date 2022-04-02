@@ -1752,22 +1752,20 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    } else {
 		me->DivisionAlignments[me->Division_Level] = HT_LEFT;
 		if (present && present[HTML_DIV_CLASS] &&
-		    matches_class(value[HTML_DIV_CLASS], ppre_classnames)) {
+		    matches_class(value[HTML_DIV_CLASS], ppre_classnames))
 		    change_paragraph_style(me, styles[HTML_DIVPRE]);
-		} else {
+		else
 		    change_paragraph_style(me, styles[HTML_DLEFT]);
-		}
 		UPDATE_STYLE;
 		me->current_default_alignment = me->new_style->alignment;
 	    }
 	} else {
 	    me->DivisionAlignments[me->Division_Level] = HT_LEFT;
 	    if (present && present[HTML_DIV_CLASS] &&
-		matches_class(value[HTML_DIV_CLASS], ppre_classnames)) {
+		matches_class(value[HTML_DIV_CLASS], ppre_classnames))
 		change_paragraph_style(me, styles[HTML_DIVPRE]);
-	    } else {
-                change_paragraph_style(me, styles[HTML_DLEFT]);
-            }
+	    else
+		change_paragraph_style(me, styles[HTML_DLEFT]);
 	    UPDATE_STYLE;
 	    me->current_default_alignment = me->new_style->alignment;
 	}
@@ -1866,9 +1864,10 @@ static int HTML_start_element(HTStructured * me, int element_number,
 
     case HTML_P:
 	if (present && present[HTML_P_CLASS] &&
-	    matches_class(value[HTML_P_CLASS], ppre_classnames)) {
+	    matches_class(value[HTML_P_CLASS], ppre_classnames))
 	    change_paragraph_style(me, styles[HTML_PPRE]);
-	}
+	else /* reset. otherwise PPRE continues */
+	    change_paragraph_style(me, default_style);
 	LYHandlePlike(me, present, value, include, HTML_P_ALIGN, TRUE);
 	CHECK_ID(HTML_P_ID);
 	break;
@@ -8220,12 +8219,19 @@ static BOOL matches_class(const char *attr, const char *search)
     char *st;
     BOOL result = FALSE;
 
-    if (isEmpty(attr))
-        return FALSE;
-    StrAllocCopy(tmpbuf, search);
+    if (isEmpty(attr) || isEmpty(search))
+	return FALSE;
+    StrAllocCopy(tmpbuf, attr);
     next = tmpbuf;
     while ((st = LYstrsep(&next, " ")) != 0) {
-	if (strstr(attr, st)) { /* TODO: check for each splitted attr */
+	char *p = strstr(search, st);
+	if (p == 0)
+	    continue;
+	/* word match */
+	if (!(p == search || isspace(*(p - 1))))
+	    continue;
+	p += strlen(st);
+	if (*p == 0 || isspace(*p)) {
 	    result = TRUE;
 	    break;
 	}
