@@ -1729,6 +1729,11 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		     me->sp[0].tag_number == HTML_LH ||
 		     me->sp[0].tag_number == HTML_DD)
 		me->current_default_alignment = HT_LEFT;
+	    if (present && present[HTML_DIV_CLASS] &&
+		matches_class(value[HTML_DIV_CLASS], ppre_classnames)) {
+		change_paragraph_style(me, styles[HTML_DIVPRE]);
+		me->current_default_alignment = styles[HTML_DIVPRE]->alignment;;
+	    }
 	    LYHandlePlike(me, present, value, include, HTML_DIV_ALIGN, TRUE);
 	    me->DivisionAlignments[me->Division_Level] = (short)
 		me->current_default_alignment;
@@ -1746,22 +1751,25 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		me->current_default_alignment = styles[HTML_DRIGHT]->alignment;
 	    } else {
 		me->DivisionAlignments[me->Division_Level] = HT_LEFT;
-		change_paragraph_style(me, styles[HTML_DLEFT]);
+		if (present && present[HTML_DIV_CLASS] &&
+		    matches_class(value[HTML_DIV_CLASS], ppre_classnames)) {
+		    change_paragraph_style(me, styles[HTML_DIVPRE]);
+		} else {
+		    change_paragraph_style(me, styles[HTML_DLEFT]);
+		}
 		UPDATE_STYLE;
-		me->current_default_alignment = styles[HTML_DLEFT]->alignment;
+		me->current_default_alignment = me->new_style->alignment;
 	    }
 	} else {
 	    me->DivisionAlignments[me->Division_Level] = HT_LEFT;
-	    change_paragraph_style(me, styles[HTML_DLEFT]);
-	    UPDATE_STYLE;
-	    me->current_default_alignment = styles[HTML_DLEFT]->alignment;
-	}
-	if (present && present[HTML_DIV_CLASS] &&
-		   non_empty(value[HTML_DIV_CLASS])) {
-	    if (matches_class(value[HTML_DIV_CLASS], ppre_classnames)) {
+	    if (present && present[HTML_DIV_CLASS] &&
+		matches_class(value[HTML_DIV_CLASS], ppre_classnames)) {
 		change_paragraph_style(me, styles[HTML_DIVPRE]);
-		UPDATE_STYLE;
-	    }
+	    } else {
+                change_paragraph_style(me, styles[HTML_DLEFT]);
+            }
+	    UPDATE_STYLE;
+	    me->current_default_alignment = me->new_style->alignment;
 	}
 	CHECK_ID(HTML_DIV_ID);
 	break;
@@ -1858,10 +1866,8 @@ static int HTML_start_element(HTStructured * me, int element_number,
 
     case HTML_P:
 	if (present && present[HTML_P_CLASS] &&
-		   non_empty(value[HTML_P_CLASS])) {
-	    if (matches_class(value[HTML_P_CLASS], ppre_classnames)) {
-		change_paragraph_style(me, styles[HTML_PPRE]);
-	    }
+	    matches_class(value[HTML_P_CLASS], ppre_classnames)) {
+	    change_paragraph_style(me, styles[HTML_PPRE]);
 	}
 	LYHandlePlike(me, present, value, include, HTML_P_ALIGN, TRUE);
 	CHECK_ID(HTML_P_ID);
@@ -8214,6 +8220,8 @@ static BOOL matches_class(const char *attr, const char *search)
     char *st;
     BOOL result = FALSE;
 
+    if (isEmpty(attr))
+        return FALSE;
     StrAllocCopy(tmpbuf, search);
     next = tmpbuf;
     while ((st = LYstrsep(&next, " ")) != 0) {
