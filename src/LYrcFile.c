@@ -532,7 +532,9 @@ Lynx does not save your changes to that default value as a side-effect\n\
 of sending email.  To update the default value, you must use the options\n\
 menu, or modify this file directly.\n\
 ")),
+#ifdef EXP_PPRE
     MAYBE_STR(RC_PPRECLASSNAMES,        ppre_classnames,       MSG_ENABLE_LYNXRC),
+#endif
     PARSE_STR(RC_PREFERRED_CHARSET,     pref_charset, N_("\
 preferred_charset specifies the character set in MIME notation (e.g.,\n\
 ISO-8859-2, ISO-8859-5) which Lynx will indicate you prefer in requests\n\

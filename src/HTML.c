@@ -147,7 +147,9 @@ static char *MakeNewTitle(STRING2PTR value, int src_type);
 static char *MakeNewImageValue(STRING2PTR value);
 static char *MakeNewMapValue(STRING2PTR value, const char *mapstr);
 
+#ifdef EXP_PPRE
 static BOOL matches_class(const char *attr, const char *search);
+#endif
 
 /*	Set an internal flag that the next call to a stack-affecting method
  *	is only internal and the stack manipulation should be skipped. - kw
@@ -431,9 +433,12 @@ void HTML_put_character(HTStructured * me, int c)
 	/*
 	 * Free format text.
 	 */
-	if (me->sp->style->id == ST_Preformatted ||
-	    me->sp->style->id == ST_PreformattedDiv ||
-	    me->sp->style->id == ST_PreformattedP) {
+	if (me->sp->style->id == ST_Preformatted
+#ifdef EXP_PPRE
+	    || me->sp->style->id == ST_PreformattedP
+	    || me->sp->style->id == ST_PreformattedDiv
+#endif
+	    ) {
 	    if (c != '\r' &&
 		!(c == '\n' && me->inLABEL && !me->inP) &&
 		!(c == '\n' && !me->inPRE)) {
@@ -1729,11 +1734,13 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		     me->sp[0].tag_number == HTML_LH ||
 		     me->sp[0].tag_number == HTML_DD)
 		me->current_default_alignment = HT_LEFT;
+#ifdef EXP_PPRE
 	    if (present && present[HTML_DIV_CLASS] &&
 		matches_class(value[HTML_DIV_CLASS], ppre_classnames)) {
 		change_paragraph_style(me, styles[HTML_DIVPRE]);
 		me->current_default_alignment = styles[HTML_DIVPRE]->alignment;;
 	    }
+#endif
 	    LYHandlePlike(me, present, value, include, HTML_DIV_ALIGN, TRUE);
 	    me->DivisionAlignments[me->Division_Level] = (short)
 		me->current_default_alignment;
@@ -1751,20 +1758,24 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		me->current_default_alignment = styles[HTML_DRIGHT]->alignment;
 	    } else {
 		me->DivisionAlignments[me->Division_Level] = HT_LEFT;
+#ifdef EXP_PPRE
 		if (present && present[HTML_DIV_CLASS] &&
 		    matches_class(value[HTML_DIV_CLASS], ppre_classnames))
 		    change_paragraph_style(me, styles[HTML_DIVPRE]);
 		else
+#endif
 		    change_paragraph_style(me, styles[HTML_DLEFT]);
 		UPDATE_STYLE;
 		me->current_default_alignment = me->new_style->alignment;
 	    }
 	} else {
 	    me->DivisionAlignments[me->Division_Level] = HT_LEFT;
+#ifdef EXP_PPRE
 	    if (present && present[HTML_DIV_CLASS] &&
 		matches_class(value[HTML_DIV_CLASS], ppre_classnames))
 		change_paragraph_style(me, styles[HTML_DIVPRE]);
 	    else
+#endif
 		change_paragraph_style(me, styles[HTML_DLEFT]);
 	    UPDATE_STYLE;
 	    me->current_default_alignment = me->new_style->alignment;
@@ -1863,11 +1874,13 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	break;
 
     case HTML_P:
+#ifdef EXP_PPRE
 	if (present && present[HTML_P_CLASS] &&
 	    matches_class(value[HTML_P_CLASS], ppre_classnames))
 	    change_paragraph_style(me, styles[HTML_PPRE]);
 	else /* reset. otherwise PPRE continues */
 	    change_paragraph_style(me, default_style);
+#endif
 	LYHandlePlike(me, present, value, include, HTML_P_ALIGN, TRUE);
 	CHECK_ID(HTML_P_ID);
 	break;
@@ -5315,9 +5328,11 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	} else if (me->List_Nesting_Level >= 0 ||
 		   ((me->Division_Level < 0) &&
 		    (me->sp->style->id == ST_Normal ||
-		     me->sp->style->id == ST_Preformatted ||
+#ifdef EXP_PPRE
+		     me->sp->style->id == ST_PreformattedP ||
 		     me->sp->style->id == ST_PreformattedDiv ||
-		     me->sp->style->id == ST_PreformattedP))) {
+#endif
+		     me->sp->style->id == ST_Preformatted))) {
 	    me->sp->style->alignment = HT_LEFT;
 	} else {
 	    me->sp->style->alignment = (short) me->current_default_alignment;
@@ -8212,6 +8227,7 @@ static char *MakeNewMapValue(STRING2PTR value, const char *mapstr)
     return newtitle;
 }
 
+#ifdef EXP_PPRE
 static BOOL matches_class(const char *attr, const char *search)
 {
     char *tmpbuf = 0;
@@ -8239,3 +8255,4 @@ static BOOL matches_class(const char *attr, const char *search)
     FREE(tmpbuf);
     return result;
 }
+#endif

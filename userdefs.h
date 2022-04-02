@@ -1677,6 +1677,13 @@
  */
 #define SSL_CERT_FILE NULL
 
+/**************************
+ * Pre-format <P> class names feature.
+ * for <p class="xxx"> or <div class="xxx">
+ * with CSS ".xxx{white-space:pre;}"
+ */
+#define EXP_PPRE
+
 /****************************************************************
  *  Section 4.  Things you MUST check only if you plan to use Lynx
  *              in an anonymous account (allow public access to Lynx).

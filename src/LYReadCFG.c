@@ -1669,7 +1669,9 @@ static Config_Type Config_Table [] =
      PARSE_STR(RC_PERSONAL_EXTENSION_MAP, personal_extension_map),
      PARSE_STR(RC_PERSONAL_MAILCAP,     personal_type_map),
      PARSE_LST(RC_POSITIONABLE_EDITOR,  positionable_editor),
+#ifdef EXP_PPRE
      PARSE_STR(RC_PPRECLASSNAMES,       ppre_classnames),
+#endif
      PARSE_STR(RC_PREFERRED_CHARSET,    pref_charset),
      PARSE_ENU(RC_PREFERRED_CONTENT_TYPE, LYContentType, tbl_preferred_content),
      PARSE_ENU(RC_PREFERRED_ENCODING,   LYAcceptEncoding, tbl_preferred_encoding),

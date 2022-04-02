@@ -2635,9 +2635,11 @@ void LYHandlePlike(HTStructured * me, const BOOL *present,
 		 me->sp->style->id == ST_DivRight)) ||
 	       ((me->Division_Level < 0) &&
 		(me->sp->style->id == ST_Normal ||
-		 me->sp->style->id == ST_Preformatted ||
+#ifdef EXP_PPRE
+		 me->sp->style->id == ST_PreformattedP ||
 		 me->sp->style->id == ST_PreformattedDiv ||
-		 me->sp->style->id == ST_PreformattedP))) {
+#endif
+		 me->sp->style->id == ST_Preformatted))) {
 	me->sp->style->alignment = HT_LEFT;
     } else {
 	me->sp->style->alignment = (short) me->current_default_alignment;
@@ -3215,9 +3217,11 @@ void LYResetParagraphAlignment(HTStructured * me)
     if (me->List_Nesting_Level >= 0 ||
 	((me->Division_Level < 0) &&
 	 (me->sp->style->id == ST_Normal ||
-	  me->sp->style->id == ST_Preformatted ||
+#ifdef EXP_PPRE
+	  me->sp->style->id == ST_PreformattedP ||
 	  me->sp->style->id == ST_PreformattedDiv ||
-	  me->sp->style->id == ST_PreformattedP))) {
+#endif
+	  me->sp->style->id == ST_Preformatted))) {
 	me->sp->style->alignment = HT_LEFT;
     } else {
 	me->sp->style->alignment = (short) me->current_default_alignment;
