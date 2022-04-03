@@ -5963,7 +5963,7 @@ static int HTML_end_element(HTStructured * me, int element_number,
 	break;
 
     case HTML_P:
-#ifdef EXP_PPRE
+#ifdef EXP_PPRE /* HTML_PPRE style end */
 	change_paragraph_style(me, me->sp->style);
 #endif
 	LYHandlePlike(me,
