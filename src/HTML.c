@@ -1182,7 +1182,6 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	break;
 
     case HTML_LINK:
-#ifdef USE_TOOLBAR
 	intern_flag = FALSE;
 	if (present && present[HTML_LINK_HREF]) {
 	    CHECK_FOR_INTERN(intern_flag, value[HTML_LINK_HREF]);
@@ -1398,6 +1397,13 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		HTML_end_element(me, HTML_A, include);
 	    }
 
+	    if (no_toolbar) {
+		FREE(temp);
+		FREE(href);
+		FREE(title);
+		break;
+	    }
+
 	    /*
 	     * Create anchors for the links that simulate a toolbar.  - FM
 	     */
@@ -1477,7 +1483,6 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	}
 	FREE(href);
 	FREE(title);
-#endif /* USE_TOOLBAR */
 	break;
 
     case HTML_ISINDEX:
@@ -1681,12 +1686,12 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	UPDATE_STYLE;
 	if (me->sp->tag_number == (int) ElementNumber)
 	    LYEnsureDoubleSpace(me);
-#ifdef USE_TOOLBAR
 	/*
 	 * Treat this as a toolbar if we don't have one yet, and we are in the
 	 * first half of the first page.  - FM
 	 */
-	if ((!HText_hasToolbar(me->text) &&
+	if (!no_toolbar &&
+	    (!HText_hasToolbar(me->text) &&
 	     HText_getLines(me->text) < (display_lines / 2)) &&
 	    (ID_A = HTAnchor_findChildAndLink(me->node_anchor,	/* Parent */
 					      LYToolbarName,	/* Tag */
@@ -1696,7 +1701,6 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    HText_endAnchor(me->text, 0);
 	    HText_setToolbar(me->text);
 	}
-#endif
 	CHECK_ID(HTML_GEN_ID);
 	break;
 

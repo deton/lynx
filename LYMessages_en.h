@@ -426,6 +426,7 @@
 #define NO_EDITOR gettext("No editor is defined!")
 #define PRINT_DISABLED gettext("The 'p'rint command is currently disabled.")
 #define NO_TOOLBAR gettext("Document has no Toolbar links or Banner.")
+#define TOOLBAR_DISABLED gettext("Toolbar is currently disabled.")
 #define CANNOT_OPEN_TRAV_FILE gettext("Unable to open traversal file.")
 #define CANNOT_OPEN_TRAF_FILE gettext("Unable to open traversal found file.")
 #define CANNOT_OPEN_REJ_FILE gettext("Unable to open reject file.")

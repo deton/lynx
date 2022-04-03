@@ -4754,7 +4754,10 @@ static void handle_LYK_TOOLBAR(BOOLEAN *try_internal,
     if (!HText_hasToolbar(HTMainText)) {
 	if (*old_c != real_c) {
 	    *old_c = real_c;
-	    HTUserMsg(NO_TOOLBAR);
+	    if (no_toolbar)
+		HTUserMsg(TOOLBAR_DISABLED);
+	    else
+		HTUserMsg(NO_TOOLBAR);
 	}
     } else if (*old_c != real_c) {
 	*old_c = real_c;

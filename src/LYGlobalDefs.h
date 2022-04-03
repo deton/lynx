@@ -388,7 +388,6 @@ extern "C" {
     extern char *personal_mail_name;
     extern char *homepage;	/* startfile or command line argument */
     extern char *editor;	/* if non empty it enables edit mode with
-
 				 * the editor that is named */
     extern char *jumpfile;
     extern char *bookmark_page;
@@ -406,6 +405,7 @@ extern "C" {
     extern BOOLEAN no_margins;
     extern BOOLEAN no_pause;
     extern BOOLEAN no_title;
+    extern BOOLEAN no_toolbar;
     extern BOOLEAN update_term_title;
     extern BOOLEAN historical_comments;
     extern BOOLEAN html5_charsets;
