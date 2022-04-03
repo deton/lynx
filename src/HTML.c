@@ -1878,8 +1878,6 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	if (present && present[HTML_P_CLASS] &&
 	    matches_class(value[HTML_P_CLASS], ppre_classnames))
 	    change_paragraph_style(me, styles[HTML_PPRE]);
-	else /* reset. otherwise PPRE continues */
-	    change_paragraph_style(me, default_style);
 #endif
 	LYHandlePlike(me, present, value, include, HTML_P_ALIGN, TRUE);
 	CHECK_ID(HTML_P_ID);
@@ -5965,6 +5963,9 @@ static int HTML_end_element(HTStructured * me, int element_number,
 	break;
 
     case HTML_P:
+#ifdef EXP_PPRE
+	change_paragraph_style(me, me->sp->style);
+#endif
 	LYHandlePlike(me,
 		      (const BOOL *) 0, (STRING2PTR) 0,
 		      include, 0,
