@@ -3135,6 +3135,30 @@ void LYHandleID(HTStructured * me, const char *id)
     }
 }
 
+void LYAddHeadingID(HTStructured * me, int element_number)
+{
+    HTChildAnchor *ID_A = NULL;
+    char *id = 0;
+
+    if (!(me && me->text))
+	return;
+
+    HTSprintf0(&id, ":H%d_%d_LYNXHEADING", element_number - HTML_H1 + 1,
+        me->nextHeadingSeqNum);
+    me->nextHeadingSeqNum++;
+
+    if ((ID_A = HTAnchor_findChildAndLink
+	 (
+	     me->node_anchor,	/* Parent */
+	     id,		/* Tag */
+	     NULL,		/* Address */
+	     (HTLinkType *) 0)) != NULL) {	/* Type */
+	HText_beginAnchor(me->text, me->inUnderline, ID_A);
+	HText_endAnchor(me->text, 0);
+    }
+    FREE(id);
+}
+
 /*
  *  This function checks whether we want to override
  *  the current default alignment for paragraphs and

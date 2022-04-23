@@ -75,6 +75,7 @@ extern "C" {
 	int CurrentANum;	/* current HTML_A number */
 	char *base_href;	/* current HTML_BASE href */
 	char *map_address;	/* current HTML_MAP address */
+	int nextHeadingSeqNum;	/* next HTML_H# sequence number */
 
 	HTChunk title;		/* Grow by 128 */
 	HTChunk object;		/* Grow by 128 */

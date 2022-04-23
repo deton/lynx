@@ -9573,6 +9573,45 @@ const char *HText_HiddenLinkAt(HText *text, int number)
     return (href);
 }
 
+int HText_PoundCount(BOOL onlyLynxHeading)
+{
+    int count = 0;
+    TextAnchor *a;
+
+    for (a = HTMainText->first_anchor; a != 0; a = a->next) {
+	if (a->anchor && non_empty(a->anchor->tag)) {
+	    if (!onlyLynxHeading)
+		count++;
+	    else if (strstr(a->anchor->tag, "_LYNXHEADING"))
+		count++;
+	}
+    }
+    return (count);
+}
+
+HTChildAnchor *HText_PoundNext(BOOL onlyLynxHeading, void **prev)
+{
+    TextAnchor *a = (TextAnchor *) *prev;
+
+    if (!HTMainText)
+	return (HTChildAnchor *) 0;	/* Fail */
+    if (!a)
+	a = HTMainText->first_anchor;
+
+    for (; a != 0; a = a->next)
+	if (a->anchor && non_empty(a->anchor->tag)) {
+	    if (!onlyLynxHeading)
+		break;
+	    else if (strstr(a->anchor->tag, "_LYNXHEADING"))
+		break;
+        }
+
+    if (!a)
+	return (HTChildAnchor *) 0;	/* Fail */
+    *prev = (void *) a->next;
+    return a->anchor;
+}
+
 /*
  * Form methods
  * These routines are used to build forms consisting

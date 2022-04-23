@@ -92,6 +92,7 @@ extern "C" {
 			     STRING2PTR value,
 			     int attribute);
     extern void LYHandleID(HTStructured * me, const char *id);
+    extern void LYAddHeadingID(HTStructured * me, int element_number);
     extern BOOLEAN LYoverride_default_alignment(HTStructured * me);
     extern void LYEnsureDoubleSpace(HTStructured * me);
     extern void LYEnsureSingleSpace(HTStructured * me);

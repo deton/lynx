@@ -43,7 +43,7 @@
 int showlist(DocInfo *newdoc, int titles)
 {
     int cnt;
-    int refs, hidden_links;
+    int refs, hidden_links, pounds;
     int result;
     static char tempfile[LY_MAXPATH];
     static BOOLEAN last_titles = TRUE;
@@ -56,12 +56,14 @@ int showlist(DocInfo *newdoc, int titles)
 
     refs = HText_sourceAnchors(HTMainText);
     hidden_links = HText_HiddenLinkCount(HTMainText);
+    pounds = HText_PoundCount(TRUE);
     if (refs <= 0 && hidden_links > 0 &&
-	LYHiddenLinks != HIDDENLINKS_SEPARATE) {
+	LYHiddenLinks != HIDDENLINKS_SEPARATE &&
+	pounds <= 0) {
 	HTUserMsg(NO_VISIBLE_REFS_FROM_DOC);
 	return (-1);
     }
-    if (refs <= 0 && hidden_links <= 0) {
+    if (refs <= 0 && hidden_links <= 0 && pounds <= 0) {
 	HTUserMsg(NO_REFS_FROM_DOC);
 	return (-1);
     }
@@ -91,10 +93,11 @@ int showlist(DocInfo *newdoc, int titles)
 	     ? Address
 	     : gettext("this document:")));
     FREE(Address);
+    fprintf(fp0, "<a href='#headings'>#%s</a><p>\n", gettext("Headings"));
     if (refs > 0) {
 	fprintf(fp0, "<%s compact>\n", ((keypad_mode == NUMBERS_AS_ARROWS) ?
 					"ol" : "ul"));
-	if (hidden_links > 0)
+	if (hidden_links > 0 || pounds > 0)
 	    fprintf(fp0, "<lh><em>%s</em>\n", gettext("Visible links:"));
     }
     if (hidden_links > 0) {
@@ -211,6 +214,26 @@ int showlist(DocInfo *newdoc, int titles)
 	}
 	fprintf(fp0, "<li><a href=\"%s\">%s</a>\n", Address, Address);
 
+	FREE(Address);
+    }
+
+    if (pounds > 0) {
+	if (refs > 0 || hidden_links > 0)
+	    fprintf(fp0, "\n</%s>\n\n<p>\n",
+		    ((keypad_mode == NUMBERS_AS_ARROWS) ?
+		     "ol" : "ul"));
+	fprintf(fp0, "<%s compact>\n", ((keypad_mode == NUMBERS_AS_ARROWS) ?
+					"ol continue" : "ul"));
+	fprintf(fp0, "<lh id=\"headings\"><em>%s</em>\n", gettext("Headings:"));
+    }
+
+    helper = NULL;		/* init */
+    for (cnt = 0; cnt < pounds; cnt++) {
+	HTChildAnchor *child = HText_PoundNext(TRUE, &helper);
+	Address = HTAnchor_address((HTAnchor *) child);
+	LYEntify(&Address, TRUE);
+	fprintf(fp0, "<li><a href=\"%s\" TYPE=\"internal link\">#%s</a>\n", Address,
+		child->tag);
 	FREE(Address);
     }
 
