@@ -229,11 +229,12 @@ int showlist(DocInfo *newdoc, int titles)
 
     helper = NULL;		/* init */
     for (cnt = 0; cnt < pounds; cnt++) {
-	HTChildAnchor *child = HText_PoundNext(TRUE, &helper);
+	int linenum = 0;
+	HTChildAnchor *child = HText_PoundNext(TRUE, &linenum, &helper);
 	Address = HTAnchor_address((HTAnchor *) child);
 	LYEntify(&Address, TRUE);
-	fprintf(fp0, "<li><a href=\"%s\" TYPE=\"internal link\">#%s</a>\n", Address,
-		child->tag);
+	fprintf(fp0, "<li><a href=\"%s\" TYPE=\"internal link\">#%s</a> (line %d)\n",
+		Address, child->tag, linenum);
 	FREE(Address);
     }
 

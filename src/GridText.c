@@ -9589,9 +9589,10 @@ int HText_PoundCount(BOOL onlyLynxHeading)
     return (count);
 }
 
-HTChildAnchor *HText_PoundNext(BOOL onlyLynxHeading, void **prev)
+HTChildAnchor *HText_PoundNext(BOOL onlyLynxHeading, int *linenum, void **prev)
 {
     TextAnchor *a = (TextAnchor *) *prev;
+    *linenum = 0;
 
     if (!HTMainText)
 	return (HTChildAnchor *) 0;	/* Fail */
@@ -9609,6 +9610,7 @@ HTChildAnchor *HText_PoundNext(BOOL onlyLynxHeading, void **prev)
     if (!a)
 	return (HTChildAnchor *) 0;	/* Fail */
     *prev = (void *) a->next;
+    *linenum = a->line_num;
     return a->anchor;
 }
 

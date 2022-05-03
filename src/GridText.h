@@ -184,7 +184,7 @@ US-ASCII control characters <32 which are not defined in Unicode standard
     extern void HText_setTabID(HText *text, const char *name);
     extern void *HText_pool_calloc(HText *text, unsigned size);
     extern int HText_PoundCount(BOOL onlyLynxHeading);
-    extern HTChildAnchor *HText_PoundNext(BOOL onlyLynxHeading, void **prev);
+    extern HTChildAnchor *HText_PoundNext(BOOL onlyLynxHeading, int *linenum, void **prev);
 
 /* "simple table" stuff */
     extern BOOLEAN HText_endStblTABLE(HText *);
