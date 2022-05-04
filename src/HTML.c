@@ -1839,7 +1839,9 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		me->inP = FALSE;
 	    }
 	    CHECK_ID(HTML_H_ID);
+#ifdef EXP_LYNXHEADING
 	    LYAddHeadingID(me, ElementNumber);
+#endif
 	    break;
 	}
 
@@ -1867,7 +1869,9 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	}
 	UPDATE_STYLE;
 	CHECK_ID(HTML_H_ID);
+#ifdef EXP_LYNXHEADING
 	LYAddHeadingID(me, ElementNumber);
+#endif
 
 	if ((bold_headers == TRUE ||
 	     (ElementNumber == HTML_H1 && bold_H1 == TRUE)) &&
@@ -7589,7 +7593,9 @@ HTStructured *HTML_new(HTParentAnchor *anchor,
     me->CurrentANum = 0;
     me->base_href = NULL;
     me->map_address = NULL;
+#ifdef EXP_LYNXHEADING
     me->nextHeadingSeqNum = 0;
+#endif
 
     HTChunkInit(&me->title, 128);
 

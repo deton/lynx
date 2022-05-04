@@ -9573,6 +9573,7 @@ const char *HText_HiddenLinkAt(HText *text, int number)
     return (href);
 }
 
+#ifdef EXP_LYNXHEADING
 int HText_PoundCount(BOOL onlyLynxHeading)
 {
     int count = 0;
@@ -9582,7 +9583,7 @@ int HText_PoundCount(BOOL onlyLynxHeading)
 	if (a->anchor && non_empty(a->anchor->tag)) {
 	    if (!onlyLynxHeading)
 		count++;
-	    else if (strstr(a->anchor->tag, "_LYNXHEADING"))
+	    else if (!strncasecomp(a->anchor->tag, ":~:LYNXHEADING_", 15))
 		count++;
 	}
     }
@@ -9603,7 +9604,7 @@ HTChildAnchor *HText_PoundNext(BOOL onlyLynxHeading, int *linenum, void **prev)
 	if (a->anchor && non_empty(a->anchor->tag)) {
 	    if (!onlyLynxHeading)
 		break;
-	    else if (strstr(a->anchor->tag, "_LYNXHEADING"))
+	    else if (!strncasecomp(a->anchor->tag, ":~:LYNXHEADING_", 15))
 		break;
         }
 
@@ -9613,6 +9614,7 @@ HTChildAnchor *HText_PoundNext(BOOL onlyLynxHeading, int *linenum, void **prev)
     *linenum = a->line_num;
     return a->anchor;
 }
+#endif /* EXP_LYNXHEADING */
 
 /*
  * Form methods

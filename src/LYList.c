@@ -43,7 +43,10 @@
 int showlist(DocInfo *newdoc, int titles)
 {
     int cnt;
-    int refs, hidden_links, pounds;
+    int refs, hidden_links;
+#ifdef EXP_LYNXHEADING
+    int pounds;
+#endif
     int result;
     static char tempfile[LY_MAXPATH];
     static BOOLEAN last_titles = TRUE;
@@ -56,14 +59,23 @@ int showlist(DocInfo *newdoc, int titles)
 
     refs = HText_sourceAnchors(HTMainText);
     hidden_links = HText_HiddenLinkCount(HTMainText);
+#ifdef EXP_LYNXHEADING
     pounds = HText_PoundCount(TRUE);
+#endif
     if (refs <= 0 && hidden_links > 0 &&
-	LYHiddenLinks != HIDDENLINKS_SEPARATE &&
-	pounds <= 0) {
+	LYHiddenLinks != HIDDENLINKS_SEPARATE
+#ifdef EXP_LYNXHEADING
+	&& pounds <= 0
+#endif
+	) {
 	HTUserMsg(NO_VISIBLE_REFS_FROM_DOC);
 	return (-1);
     }
-    if (refs <= 0 && hidden_links <= 0 && pounds <= 0) {
+    if (refs <= 0 && hidden_links <= 0
+#ifdef EXP_LYNXHEADING
+	&& pounds <= 0
+#endif
+	) {
 	HTUserMsg(NO_REFS_FROM_DOC);
 	return (-1);
     }
@@ -93,11 +105,17 @@ int showlist(DocInfo *newdoc, int titles)
 	     ? Address
 	     : gettext("this document:")));
     FREE(Address);
+#ifdef EXP_LYNXHEADING
     fprintf(fp0, "<a href='#headings'>#%s</a><p>\n", gettext("Headings"));
+#endif
     if (refs > 0) {
 	fprintf(fp0, "<%s compact>\n", ((keypad_mode == NUMBERS_AS_ARROWS) ?
 					"ol" : "ul"));
-	if (hidden_links > 0 || pounds > 0)
+	if (hidden_links > 0
+#ifdef EXP_LYNXHEADING
+	    || pounds > 0
+#endif
+	    )
 	    fprintf(fp0, "<lh><em>%s</em>\n", gettext("Visible links:"));
     }
     if (hidden_links > 0) {
@@ -217,6 +235,7 @@ int showlist(DocInfo *newdoc, int titles)
 	FREE(Address);
     }
 
+#ifdef EXP_LYNXHEADING
     if (pounds > 0) {
 	if (refs > 0 || hidden_links > 0)
 	    fprintf(fp0, "\n</%s>\n\n<p>\n",
@@ -237,6 +256,7 @@ int showlist(DocInfo *newdoc, int titles)
 		Address, child->tag, linenum);
 	FREE(Address);
     }
+#endif /* EXP_LYNXHEADING */
 
     fprintf(fp0, "\n</%s>\n", ((keypad_mode == NUMBERS_AS_ARROWS) ?
 			       "ol" : "ul"));

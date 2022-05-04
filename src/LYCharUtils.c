@@ -3135,6 +3135,7 @@ void LYHandleID(HTStructured * me, const char *id)
     }
 }
 
+#ifdef EXP_LYNXHEADING
 void LYAddHeadingID(HTStructured * me, int element_number)
 {
     HTChildAnchor *ID_A = NULL;
@@ -3143,8 +3144,8 @@ void LYAddHeadingID(HTStructured * me, int element_number)
     if (!(me && me->text))
 	return;
 
-    HTSprintf0(&id, ":H%d_%d_LYNXHEADING", element_number - HTML_H1 + 1,
-        me->nextHeadingSeqNum);
+    HTSprintf0(&id, ":~:LYNXHEADING_%d_H%d", me->nextHeadingSeqNum,
+	element_number - HTML_H1 + 1);
     me->nextHeadingSeqNum++;
 
     if ((ID_A = HTAnchor_findChildAndLink
@@ -3158,6 +3159,7 @@ void LYAddHeadingID(HTStructured * me, int element_number)
     }
     FREE(id);
 }
+#endif /* EXP_LYNXHEADING */
 
 /*
  *  This function checks whether we want to override

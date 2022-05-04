@@ -1684,6 +1684,11 @@
  */
 #define EXP_PPRE
 
+/**************************
+ * Add H1-H6 Headings link list to List Page.
+ */
+#define EXP_LYNXHEADING
+
 /****************************************************************
  *  Section 4.  Things you MUST check only if you plan to use Lynx
  *              in an anonymous account (allow public access to Lynx).
