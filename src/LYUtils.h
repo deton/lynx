@@ -532,6 +532,13 @@ extern "C" {
                              !strncasecomp(addr, STR_LYNXPROG, LEN_LYNXPROG))
 
 #define LYNXOPTIONS_PAGE(s)  STR_LYNXOPTIONS s
+
+/* internal fragment identifiers after '#' */
+#ifdef EXP_LYNXHEADING
+#define STR_LYNXHEADING      ":~:LYNXHEADING_"
+#define LEN_LYNXHEADING      15
+#define isLYNXHEADING(tag)   !strncasecomp(tag, STR_LYNXHEADING, LEN_LYNXHEADING)
+#endif
 /*
  *  For change_sug_filename().
  */

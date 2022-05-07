@@ -9583,7 +9583,7 @@ int HText_PoundCount(BOOL onlyLynxHeading)
 	if (a->anchor && non_empty(a->anchor->tag)) {
 	    if (!onlyLynxHeading)
 		count++;
-	    else if (!strncasecomp(a->anchor->tag, ":~:LYNXHEADING_", 15))
+	    else if (isLYNXHEADING(a->anchor->tag))
 		count++;
 	}
     }
@@ -9604,7 +9604,7 @@ HTChildAnchor *HText_PoundNext(BOOL onlyLynxHeading, int *linenum, void **prev)
 	if (a->anchor && non_empty(a->anchor->tag)) {
 	    if (!onlyLynxHeading)
 		break;
-	    else if (!strncasecomp(a->anchor->tag, ":~:LYNXHEADING_", 15))
+	    else if (isLYNXHEADING(a->anchor->tag))
 		break;
         }
 

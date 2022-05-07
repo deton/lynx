@@ -3144,7 +3144,7 @@ void LYAddHeadingID(HTStructured * me, int element_number)
     if (!(me && me->text))
 	return;
 
-    HTSprintf0(&id, ":~:LYNXHEADING_%d_H%d", me->nextHeadingSeqNum,
+    HTSprintf0(&id, "%s%d_H%d", STR_LYNXHEADING, me->nextHeadingSeqNum,
 	element_number - HTML_H1 + 1);
     me->nextHeadingSeqNum++;
 
