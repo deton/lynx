@@ -183,7 +183,7 @@ US-ASCII control characters <32 which are not defined in Unicode standard
     extern void HText_setNodeAnchorBookmark(const char *bookmark);
     extern void HText_setTabID(HText *text, const char *name);
     extern void *HText_pool_calloc(HText *text, unsigned size);
-#ifdef EXP_LYNXHEADING
+#ifdef EXP_HEADINGLIST
     extern int HText_PoundCount(BOOL onlyLynxHeading);
     extern HTChildAnchor *HText_PoundNext(BOOL onlyLynxHeading, int *linenum, void **prev);
 #endif

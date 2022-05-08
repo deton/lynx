@@ -534,7 +534,7 @@ extern "C" {
 #define LYNXOPTIONS_PAGE(s)  STR_LYNXOPTIONS s
 
 /* internal fragment identifiers after '#' */
-#ifdef EXP_LYNXHEADING
+#ifdef EXP_HEADINGLIST
 #define STR_LYNXHEADING      ":~:LYNXHEADING_"
 #define LEN_LYNXHEADING      15
 #define isLYNXHEADING(tag)   !strncasecomp(tag, STR_LYNXHEADING, LEN_LYNXHEADING)

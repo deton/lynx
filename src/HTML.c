@@ -1839,7 +1839,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		me->inP = FALSE;
 	    }
 	    CHECK_ID(HTML_H_ID);
-#ifdef EXP_LYNXHEADING
+#ifdef EXP_HEADINGLIST
 	    LYAddHeadingID(me, ElementNumber);
 #endif
 	    break;
@@ -1869,7 +1869,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	}
 	UPDATE_STYLE;
 	CHECK_ID(HTML_H_ID);
-#ifdef EXP_LYNXHEADING
+#ifdef EXP_HEADINGLIST
 	LYAddHeadingID(me, ElementNumber);
 #endif
 
@@ -7593,7 +7593,7 @@ HTStructured *HTML_new(HTParentAnchor *anchor,
     me->CurrentANum = 0;
     me->base_href = NULL;
     me->map_address = NULL;
-#ifdef EXP_LYNXHEADING
+#ifdef EXP_HEADINGLIST
     me->nextHeadingSeqNum = 0;
 #endif
 

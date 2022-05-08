@@ -9573,7 +9573,7 @@ const char *HText_HiddenLinkAt(HText *text, int number)
     return (href);
 }
 
-#ifdef EXP_LYNXHEADING
+#ifdef EXP_HEADINGLIST
 int HText_PoundCount(BOOL onlyLynxHeading)
 {
     int count = 0;
@@ -9614,7 +9614,7 @@ HTChildAnchor *HText_PoundNext(BOOL onlyLynxHeading, int *linenum, void **prev)
     *linenum = a->line_num;
     return a->anchor;
 }
-#endif /* EXP_LYNXHEADING */
+#endif /* EXP_HEADINGLIST */
 
 /*
  * Form methods

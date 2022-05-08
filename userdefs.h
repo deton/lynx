@@ -1687,7 +1687,7 @@
 /**************************
  * Add H1-H6 Headings link list to List Page.
  */
-#define EXP_LYNXHEADING
+#define EXP_HEADINGLIST
 
 /****************************************************************
  *  Section 4.  Things you MUST check only if you plan to use Lynx

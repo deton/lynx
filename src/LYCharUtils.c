@@ -3135,7 +3135,7 @@ void LYHandleID(HTStructured * me, const char *id)
     }
 }
 
-#ifdef EXP_LYNXHEADING
+#ifdef EXP_HEADINGLIST
 void LYAddHeadingID(HTStructured * me, int element_number)
 {
     HTChildAnchor *ID_A = NULL;
@@ -3159,7 +3159,7 @@ void LYAddHeadingID(HTStructured * me, int element_number)
     }
     FREE(id);
 }
-#endif /* EXP_LYNXHEADING */
+#endif /* EXP_HEADINGLIST */
 
 /*
  *  This function checks whether we want to override

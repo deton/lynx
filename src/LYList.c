@@ -44,7 +44,7 @@ int showlist(DocInfo *newdoc, int titles)
 {
     int cnt;
     int refs, hidden_links;
-#ifdef EXP_LYNXHEADING
+#ifdef EXP_HEADINGLIST
     int pounds;
 #endif
     int result;
@@ -59,12 +59,12 @@ int showlist(DocInfo *newdoc, int titles)
 
     refs = HText_sourceAnchors(HTMainText);
     hidden_links = HText_HiddenLinkCount(HTMainText);
-#ifdef EXP_LYNXHEADING
+#ifdef EXP_HEADINGLIST
     pounds = HText_PoundCount(TRUE);
 #endif
     if (refs <= 0 && hidden_links > 0 &&
 	LYHiddenLinks != HIDDENLINKS_SEPARATE
-#ifdef EXP_LYNXHEADING
+#ifdef EXP_HEADINGLIST
 	&& pounds <= 0
 #endif
 	) {
@@ -72,7 +72,7 @@ int showlist(DocInfo *newdoc, int titles)
 	return (-1);
     }
     if (refs <= 0 && hidden_links <= 0
-#ifdef EXP_LYNXHEADING
+#ifdef EXP_HEADINGLIST
 	&& pounds <= 0
 #endif
 	) {
@@ -105,14 +105,14 @@ int showlist(DocInfo *newdoc, int titles)
 	     ? Address
 	     : gettext("this document:")));
     FREE(Address);
-#ifdef EXP_LYNXHEADING
+#ifdef EXP_HEADINGLIST
     fprintf(fp0, "<a href='#headings'>#%s</a><p>\n", gettext("Headings"));
 #endif
     if (refs > 0) {
 	fprintf(fp0, "<%s compact>\n", ((keypad_mode == NUMBERS_AS_ARROWS) ?
 					"ol" : "ul"));
 	if (hidden_links > 0
-#ifdef EXP_LYNXHEADING
+#ifdef EXP_HEADINGLIST
 	    || pounds > 0
 #endif
 	    )
@@ -235,7 +235,7 @@ int showlist(DocInfo *newdoc, int titles)
 	FREE(Address);
     }
 
-#ifdef EXP_LYNXHEADING
+#ifdef EXP_HEADINGLIST
     if (pounds > 0) {
 	if (refs > 0 || hidden_links > 0)
 	    fprintf(fp0, "\n</%s>\n\n<p>\n",
@@ -256,7 +256,7 @@ int showlist(DocInfo *newdoc, int titles)
 		Address, child->tag, linenum);
 	FREE(Address);
     }
-#endif /* EXP_LYNXHEADING */
+#endif /* EXP_HEADINGLIST */
 
     fprintf(fp0, "\n</%s>\n", ((keypad_mode == NUMBERS_AS_ARROWS) ?
 			       "ol" : "ul"));
