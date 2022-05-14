@@ -1685,7 +1685,7 @@
 #define EXP_PPRE
 
 /**************************
- * Add H1-H6 Headings link list to List Page.
+ * Add H1-H6 heading links to ADDRLIST and LIST pages
  */
 #define EXP_HEADINGLIST
 
