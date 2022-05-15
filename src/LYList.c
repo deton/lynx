@@ -124,8 +124,13 @@ int showlist(DocInfo *newdoc, int titles)
     }
     helper = NULL;		/* init */
     result = 1;
+#ifdef EXP_HEADINGLIST
+    for (cnt = 0; cnt < refs; ) {
+	HTChildAnchor *child = HText_childNext(&helper);
+#else
     for (cnt = 1; cnt <= refs; cnt++) {
 	HTChildAnchor *child = HText_childNextNumber(cnt, &helper);
+#endif
 	int value = HText_findAnchorNumber(helper);
 	HTAnchor *dest_intl = NULL;
 	HTAnchor *dest;
@@ -133,6 +138,24 @@ int showlist(DocInfo *newdoc, int titles)
 	char *address;
 	const char *title;
 
+#ifdef EXP_HEADINGLIST
+	if (child != 0 && value == 0) {
+	    if (isLYNXHEADING(child->tag)) {
+		Address = HTAnchor_address((HTAnchor *) child);
+		LYEntify(&Address, TRUE);
+		fprintf(fp0, "<%s compact>",
+			((keypad_mode == NUMBERS_AS_ARROWS) ? "ol" : "ul"));
+		fprintf(fp0,
+			"<li><a href=\"%s\" TYPE=\"internal link\">#%s</a>",
+			Address, child->tag);
+		fprintf(fp0, "</%s>\n",
+			((keypad_mode == NUMBERS_AS_ARROWS) ? "ol" : "ul"));
+		FREE(Address);
+	    }
+	    continue;
+	}
+	++cnt;
+#endif
 	if (child == 0) {
 	    /*
 	     * child should not be 0 unless form field numbering is on and cnt
@@ -252,7 +275,8 @@ int showlist(DocInfo *newdoc, int titles)
 	HTChildAnchor *child = HText_PoundNext(TRUE, &linenum, &helper);
 	Address = HTAnchor_address((HTAnchor *) child);
 	LYEntify(&Address, TRUE);
-	fprintf(fp0, "<li><a href=\"%s\" TYPE=\"internal link\">#%s</a> (line %d)\n",
+	fprintf(fp0,
+		"<li><a href=\"%s\" TYPE=\"internal link\">#%s</a> (line %d)\n",
 		Address, child->tag, linenum);
 	FREE(Address);
     }

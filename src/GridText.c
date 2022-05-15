@@ -6257,6 +6257,34 @@ HTChildAnchor *HText_childNextNumber(int number, void **prev)
     return a->anchor;
 }
 
+#ifdef EXP_HEADINGLIST
+/* returns not only HREF anchor which has number
+ * but also NAME or ID attribute anchor */
+HTChildAnchor *HText_childNext(void **prev)
+{
+    TextAnchor *a = (TextAnchor *) *prev;
+
+    if (!HTMainText)
+	return (HTChildAnchor *) 0;	/* Fail */
+    if (!a)
+	a = HTMainText->first_anchor;
+    else
+	a = a->next;
+
+    for (; a != 0; a = a->next) {
+	if (a->number > 0) /* HREF anchor */
+	    break;
+	if (a->anchor && a->anchor->tag) /* NAME or ID attribute anchor */
+	    break;
+    }
+
+    if (!a)
+	return (HTChildAnchor *) 0;	/* Fail */
+    *prev = (void *) a;
+    return a->anchor;
+}
+#endif /* EXP_HEADINGLIST */
+
 /*
  * For the -unique-urls option, find the anchor-number of the first occurrence
  * of a given address.
@@ -9606,7 +9634,7 @@ HTChildAnchor *HText_PoundNext(BOOL onlyLynxHeading, int *linenum, void **prev)
 		break;
 	    else if (isLYNXHEADING(a->anchor->tag))
 		break;
-        }
+	}
 
     if (!a)
 	return (HTChildAnchor *) 0;	/* Fail */
