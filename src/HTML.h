@@ -141,6 +141,9 @@ extern "C" {
 	stack_element *sp;	/* Style stack pointer */
 	BOOL stack_overrun;	/* Was MAX_NESTING exceeded? */
 	int skip_stack;		/* flag to skip next style stack operation */
+#ifdef EXP_PPRE
+	int ppre_style;		/* Pre-format <p> and <div> style index */
+#endif
 
 	/*
 	 *  Track if we are in an anchor, paragraph, address, base, etc.

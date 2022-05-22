@@ -286,9 +286,6 @@ extern "C" {
     extern char *lynxlinksfile;
     extern char *lynxlistfile;
     extern char *original_dir;
-#ifdef EXP_PPRE
-    extern char *ppre_classnames;
-#endif
     extern char *pref_charset;	/* Lynx's preferred character set - MM */
     extern char *startfile;
     extern char *syslog_txt;	/* syslog arb text for session */

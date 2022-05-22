@@ -42,6 +42,10 @@
 #include <HTNews.h>
 #endif
 
+#ifdef EXP_PPRE
+#include <LYStyle.h>
+#endif
+
 BOOLEAN have_read_cfg = FALSE;
 BOOLEAN LYUseNoviceLineTwo = TRUE;
 
@@ -1659,6 +1663,9 @@ static Config_Type Config_Table [] =
      PARSE_SET(RC_UPDATE_TERM_TITLE,    update_term_title),
      PARSE_FUN(RC_NONRESTARTING_SIGWINCH, nonrest_sigwinch_fun),
      PARSE_FUN(RC_OUTGOING_MAIL_CHARSET, outgoing_mail_charset_fun),
+#ifdef EXP_PPRE
+     PARSE_FUN(RC_PARAGRAPH_STYLE,      LYParaStyle_add),
+#endif
 #ifdef DISP_PARTIAL
      PARSE_SET(RC_PARTIAL,              display_partial_flag),
      PARSE_INT(RC_PARTIAL_THRES,        partial_threshold),
@@ -1669,9 +1676,6 @@ static Config_Type Config_Table [] =
      PARSE_STR(RC_PERSONAL_EXTENSION_MAP, personal_extension_map),
      PARSE_STR(RC_PERSONAL_MAILCAP,     personal_type_map),
      PARSE_LST(RC_POSITIONABLE_EDITOR,  positionable_editor),
-#ifdef EXP_PPRE
-     PARSE_STR(RC_PPRECLASSNAMES,       ppre_classnames),
-#endif
      PARSE_STR(RC_PREFERRED_CHARSET,    pref_charset),
      PARSE_ENU(RC_PREFERRED_CONTENT_TYPE, LYContentType, tbl_preferred_content),
      PARSE_ENU(RC_PREFERRED_ENCODING,   LYAcceptEncoding, tbl_preferred_encoding),

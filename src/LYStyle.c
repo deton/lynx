@@ -968,3 +968,123 @@ void reinit_color_styles(void)
 }
 
 #endif /* USE_COLOR_STYLE */
+
+#ifdef EXP_PPRE
+static HTList *paragraph_styles = NULL;
+
+typedef struct _paragraph_style_item {
+    char *url;
+    HTList *classnames;
+} paragraph_style_item;
+
+int LYParaStyle_add(char *config)
+{
+    char *style;
+    char *url;
+    char *selector;
+    char *p;
+    HTList *classnames;
+    paragraph_style_item *item = NULL;
+
+    style = HTNextField(&config);
+    if (!style)
+	return 0;
+    if (strcmp(style, "ppre")) {
+	CTRACE((tfp, "Unknown PARAGRAPH_STYLE:%s ignored.\n", style));
+	return 0;
+    }
+    url = HTNextField(&config);
+    if (!url)
+	return 0;
+    /* '.' prefixed class names separated by comma. ".name3,.name4" */
+    selector = HTNextField(&config);
+    if (!selector)
+	return 0;
+    classnames = HTList_new();
+    while ((p = LYstrsep(&selector, ",")) != NULL) {
+	if (*p != '.') {
+	    CTRACE((tfp, "Unsupported PARAGRAPH_STYLE selector:%s ignored.\n", p));
+	    continue;
+	}
+	p++;
+	if (isEmpty(p))
+	    continue;
+	char *classname = NULL;
+	StrAllocCopy(classname, p);
+	HTList_addObject(classnames, classname);
+    }
+
+    if (paragraph_styles == NULL)
+	paragraph_styles = HTList_new();
+    item = typecalloc(paragraph_style_item);
+    if (item == NULL)
+	outofmem(__FILE__, "LYParaStyle_add");
+    StrAllocCopy(item->url, url);
+    item->classnames = classnames;
+    HTList_addObject(paragraph_styles, item);
+    return 0;
+}
+
+void LYParaStyle_free()
+{
+    paragraph_style_item *item;
+    HTList *cur = paragraph_styles;
+
+    while ((item = (paragraph_style_item *) HTList_nextObject(cur)) != NULL) {
+	FREE(item->url);
+	LYFreeStringList(item->classnames);
+    }
+    HTList_delete(paragraph_styles);
+    paragraph_styles = NULL;
+}
+
+int LYParaStyle_for_url(const char *url)
+{
+    int pos;
+    paragraph_style_item *item;
+    HTList *cur = paragraph_styles;
+
+    for (pos = 0;
+	(item = (paragraph_style_item *) HTList_nextObject(cur)) != NULL;
+	pos++) {
+	if (StrNCmp(item->url, url, strlen(item->url)) == 0) {
+	    CTRACE((tfp, "LYParaStyle_for_url style %d for:%s\n", pos, url));
+	    return pos;
+	}
+    }
+    return -1;
+}
+
+/*
+ * Check whether 'attr' matches class names for styleIndex.
+ * attr: class names separated by space. "name1 name2"
+ */
+BOOL LYParaStyle_match(int styleIndex, const char *attr)
+{
+    char *tmpbuf = 0;
+    char *anext;
+    char *a;
+    paragraph_style_item *style;
+
+    if (styleIndex < 0 || isEmpty(attr))
+	return FALSE;
+    style = HTList_objectAt(paragraph_styles, styleIndex);
+    if (style == NULL)
+	return FALSE;
+
+    StrAllocCopy(tmpbuf, attr);
+    anext = tmpbuf;
+    while ((a = LYstrsep(&anext, " ")) != 0) {
+	char *name;
+	HTList *cur = style->classnames;
+	while ((name = (char *) HTList_nextObject(cur)) != NULL) {
+	    if (STREQ(name, a)) {
+		FREE(tmpbuf);
+		return TRUE;
+	    }
+	}
+    }
+    FREE(tmpbuf);
+    return FALSE;
+}
+#endif /* EXP_PPRE */

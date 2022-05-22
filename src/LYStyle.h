@@ -85,4 +85,19 @@ extern "C" {
 #endif				/* USE_COLOR_STYLE */
 extern int lynx_has_color;
 
+#ifdef EXP_PPRE
+#ifdef __cplusplus
+extern "C" {
+#endif
+    /* Functions for paragraph style */
+    extern int LYParaStyle_add(char *config);
+    extern void LYParaStyle_free();
+    extern int LYParaStyle_for_url(const char *url);
+    extern BOOL LYParaStyle_match(int styleIndex, const char *attr);
+
+#ifdef __cplusplus
+}
+#endif
+#endif				/* EXP_PPRE */
+
 #endif /* LYSTYLE_H */

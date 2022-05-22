@@ -2153,9 +2153,6 @@ static const char *cookies_accept_all_string = N_("accept all");
 static const char *x_display_string = RC_DISPLAY;
 static const char *editor_string = RC_FILE_EDITOR;
 static const char *emacs_keys_string = RC_EMACS_KEYS;
-#ifdef EXP_PPRE
-static const char *ppre_classnames_string = RC_PPRECLASSNAMES;
-#endif
 
 #if defined(ENABLE_OPTS_CHANGE_EXEC) && (defined(EXEC_LINKS) || defined(EXEC_SCRIPTS))
 #define EXEC_ALWAYS 2
@@ -3394,14 +3391,6 @@ int postoptions(DocInfo *newdoc)
 		}
 	    }
 	}
-
-#ifdef EXP_PPRE
-	/* ppre_classnames: INPUT */
-	if (!strcmp(data[i].tag, ppre_classnames_string)) {
-	    FREE(ppre_classnames);
-	    StrAllocCopy(ppre_classnames, data[i].value);
-	}
-#endif
     }				/* end of loop */
 
     /*
@@ -4137,12 +4126,6 @@ static int gen_options(char **newfile)
     BeginSelect(fp0, trim_blank_lines_string);
     PutOptValues(fp0, LYtrimBlankLines, trim_blank_lines_values);
     EndSelect(fp0);
-
-#ifdef EXP_PPRE
-    /* ppre_classnames: INPUT */
-    PutLabel(fp0, gettext("Pre-format <P> class names"), ppre_classnames_string);
-    PutTextInput(fp0, ppre_classnames_string, NonNull(ppre_classnames), text_len, "");
-#endif
 
     /*
      * Headers Transferred to Remote Servers

@@ -62,10 +62,12 @@
 #include <SGML.h>
 #include <AttrList.h>
 #include <LYHash.h>
+#endif /* USE_COLOR_STYLE */
+#if defined(USE_COLOR_STYLE) || defined(EXP_PPRE)
 #include <LYStyle.h>
 #undef SELECTED_STYLES
 #define pHText_changeStyle(X,Y,Z) {}
-#endif /* USE_COLOR_STYLE */
+#endif
 
 #ifdef USE_SOURCE_CACHE
 #include <HTAccess.h>
@@ -146,10 +148,6 @@ static int HTML_start_element(HTStructured * me, int element_number,
 static char *MakeNewTitle(STRING2PTR value, int src_type);
 static char *MakeNewImageValue(STRING2PTR value);
 static char *MakeNewMapValue(STRING2PTR value, const char *mapstr);
-
-#ifdef EXP_PPRE
-static BOOL matches_class(const char *attr, const char *search);
-#endif
 
 /*	Set an internal flag that the next call to a stack-affecting method
  *	is only internal and the stack manipulation should be skipped. - kw
@@ -1736,7 +1734,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		me->current_default_alignment = HT_LEFT;
 #ifdef EXP_PPRE
 	    if (present && present[HTML_DIV_CLASS] &&
-		matches_class(value[HTML_DIV_CLASS], ppre_classnames)) {
+		LYParaStyle_match(me->ppre_style, value[HTML_DIV_CLASS])) {
 		change_paragraph_style(me, styles[HTML_DIVPRE]);
 		me->current_default_alignment = styles[HTML_DIVPRE]->alignment;;
 	    }
@@ -1760,7 +1758,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 		me->DivisionAlignments[me->Division_Level] = HT_LEFT;
 #ifdef EXP_PPRE
 		if (present && present[HTML_DIV_CLASS] &&
-		    matches_class(value[HTML_DIV_CLASS], ppre_classnames))
+		    LYParaStyle_match(me->ppre_style, value[HTML_DIV_CLASS]))
 		    change_paragraph_style(me, styles[HTML_DIVPRE]);
 		else
 #endif
@@ -1772,7 +1770,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
 	    me->DivisionAlignments[me->Division_Level] = HT_LEFT;
 #ifdef EXP_PPRE
 	    if (present && present[HTML_DIV_CLASS] &&
-		matches_class(value[HTML_DIV_CLASS], ppre_classnames))
+		LYParaStyle_match(me->ppre_style, value[HTML_DIV_CLASS]))
 		change_paragraph_style(me, styles[HTML_DIVPRE]);
 	    else
 #endif
@@ -1876,7 +1874,7 @@ static int HTML_start_element(HTStructured * me, int element_number,
     case HTML_P:
 #ifdef EXP_PPRE
 	if (present && present[HTML_P_CLASS] &&
-	    matches_class(value[HTML_P_CLASS], ppre_classnames))
+	    LYParaStyle_match(me->ppre_style, value[HTML_P_CLASS]))
 	    change_paragraph_style(me, styles[HTML_PPRE]);
 #endif
 	LYHandlePlike(me, present, value, include, HTML_P_ALIGN, TRUE);
@@ -7632,6 +7630,9 @@ HTStructured *HTML_new(HTParentAnchor *anchor,
     me->sp->style = default_style;	/* INVALID */
     me->sp->style->alignment = HT_LEFT;
     me->stack_overrun = FALSE;
+#ifdef EXP_PPRE
+    me->ppre_style = LYParaStyle_for_url(anchor->address);
+#endif
 
     me->Division_Level = -1;
     me->Underline_Level = 0;
@@ -8227,33 +8228,3 @@ static char *MakeNewMapValue(STRING2PTR value, const char *mapstr)
     StrAllocCat(newtitle, "]");
     return newtitle;
 }
-
-#ifdef EXP_PPRE
-static BOOL matches_class(const char *attr, const char *search)
-{
-    char *tmpbuf = 0;
-    char *next;
-    char *st;
-    BOOL result = FALSE;
-
-    if (isEmpty(attr) || isEmpty(search))
-	return FALSE;
-    StrAllocCopy(tmpbuf, attr);
-    next = tmpbuf;
-    while ((st = LYstrsep(&next, " ")) != 0) {
-	char *p = strstr(search, st);
-	if (p == 0)
-	    continue;
-	/* word match */
-	if (!(p == search || isspace(*(p - 1))))
-	    continue;
-	p += strlen(st);
-	if (*p == 0 || isspace(*p)) {
-	    result = TRUE;
-	    break;
-	}
-    }
-    FREE(tmpbuf);
-    return result;
-}
-#endif

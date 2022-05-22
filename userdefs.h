@@ -1680,7 +1680,7 @@
 /**************************
  * Pre-format <P> class names feature.
  * for <p class="xxx"> or <div class="xxx">
- * with CSS ".xxx{white-space:pre;}"
+ * with CSS ".xxx{white-space:pre}"
  */
 #define EXP_PPRE
 

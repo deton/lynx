@@ -471,9 +471,6 @@ char *personal_extension_map = NULL;	/* .mime.types */
 char *personal_mail_address = NULL;	/* the user's mail address */
 char *personal_mail_name = NULL;	/* the user's personal name mail */
 char *personal_type_map = NULL;	/* .mailcap */
-#ifdef EXP_PPRE
-char *ppre_classnames = NULL;	/* CSS class names for pre-format <P> */
-#endif
 char *pref_charset = NULL;	/* preferred character set */
 char *proxyauth_info[2] =
 {NULL, NULL};			/* Id:Password for protected proxy servers */
@@ -852,9 +849,6 @@ static void free_lynx_globals(void)
     LYFreeStringList(broken_ftp_retr);
 #endif
     FREE(startrealm);
-#ifdef EXP_PPRE
-    FREE(ppre_classnames);
-#endif
     FREE(personal_mail_address);
     FREE(personal_mail_name);
     FREE(anonftp_password);
@@ -882,6 +876,9 @@ static void free_lynx_globals(void)
     FREE(nonoption);
 #endif
     LYFreeStringList(positionable_editor);
+#ifdef EXP_PPRE
+    LYParaStyle_free();
+#endif
 
     return;
 }
