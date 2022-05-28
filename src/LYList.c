@@ -106,7 +106,8 @@ int showlist(DocInfo *newdoc, int titles)
 	     : gettext("this document:")));
     FREE(Address);
 #ifdef EXP_HEADINGLIST
-    fprintf(fp0, "<a href='#headings'>#%s</a><p>\n", gettext("Headings"));
+    if (pounds)
+	fprintf(fp0, "<a href='#headings'>#%s</a><p>\n", gettext("Headings"));
 #endif
     if (refs > 0) {
 	fprintf(fp0, "<%s compact>\n", ((keypad_mode == NUMBERS_AS_ARROWS) ?
