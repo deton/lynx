@@ -107,7 +107,7 @@ int showlist(DocInfo *newdoc, int titles)
     FREE(Address);
 #ifdef EXP_HEADINGLIST
     if (pounds)
-	fprintf(fp0, "<a href='#headings'>#%s</a><p>\n", gettext("Headings"));
+	fprintf(fp0, "<a href='#headings'>#%s</a><p>\n", gettext("H1-H6"));
 #endif
     if (refs > 0) {
 	fprintf(fp0, "<%s compact>\n", ((keypad_mode == NUMBERS_AS_ARROWS) ?
@@ -267,7 +267,7 @@ int showlist(DocInfo *newdoc, int titles)
 		     "ol" : "ul"));
 	fprintf(fp0, "<%s compact>\n", ((keypad_mode == NUMBERS_AS_ARROWS) ?
 					"ol continue" : "ul"));
-	fprintf(fp0, "<lh id=\"headings\"><em>%s</em>\n", gettext("Headings:"));
+	fprintf(fp0, "<lh id=\"headings\"><em>%s</em>\n", gettext("H1-H6:"));
     }
 
     helper = NULL;		/* init */
